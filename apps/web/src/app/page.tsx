@@ -9,6 +9,7 @@ import SkillsSection from '@/components/sections/SkillsSection';
 import CertificationsSection from '@/components/sections/CertificationsSection';
 import ContactSection from '@/components/sections/ContactSection';
 import AiChatWidget from '@/components/AiChatWidget';
+import BackendErrorPage from '@/components/BackendErrorPage';
 
 /**
  * Page-level ISR: revalidate every 12 hours.
@@ -20,9 +21,20 @@ export const revalidate = 43200; // 12 hours
 export default async function HomePage() {
   const result = await getPortfolioContent({ revalidate: 43200 });
 
-  // Fallback: if backend is unavailable during build, render with null data
-  // (individual sections handle graceful empty states)
-  const content = result.success ? result.data : null;
+  // If backend is unavailable, show error page with retry capability
+  if (!result.success) {
+    return (
+      <SmoothScrollProvider>
+        <Navbar />
+        <main id="main-content" tabIndex={-1} className="outline-none">
+          <BackendErrorPage error={result.error} />
+        </main>
+        <Footer />
+      </SmoothScrollProvider>
+    );
+  }
+
+  const content = result.data;
 
   return (
     <SmoothScrollProvider>
