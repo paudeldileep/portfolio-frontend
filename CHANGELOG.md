@@ -604,3 +604,55 @@ Typed, zero-dependency async fetch client bridging the frontend monorepo to the 
 ### Test Results
 - All 5 tests in `AiChatWidget.test.tsx` now pass ✅
 - `toHaveNoViolations()` matcher recognized by TypeScript and functioning correctly
+
+---
+
+## [2026-07-18] Loading Spinner & Page Hydration Indicator
+
+**Reason:** Need visual feedback while site/backend content loads.
+
+### Files Created
+
+#### `apps/web/src/components/LoadingSpinner.tsx`
+- Reusable spinner component with Framer Motion rotation animation
+- Props: `size` ('sm' | 'md' | 'lg'), `label` (optional text), `fullScreen` (modal overlay), `className`
+- Design: rotating border with primary color accent, breathing label animation
+- Accessibility: `aria-label` for screen readers
+
+#### `apps/web/src/providers/PageLoadingProvider.tsx`
+- React Context + Provider for managing page-level loading state
+- Auto-dismisses after hydration (800ms) with smooth fade
+- Prevents flash of unstyled content during SSR hydration
+- Exported hook: `usePageLoading()` for custom loading UI in components
+
+### Files Modified
+
+#### `apps/web/src/app/layout.tsx`
+- Wrapped root layout children with `<PageLoadingProvider>`
+- Shows full-screen spinner overlay during initial page load
+- Automatically hides after hydration completes
+
+### Usage
+
+**In any component:**
+```tsx
+import { usePageLoading } from '@/providers/PageLoadingProvider';
+
+export default function MyComponent() {
+  const { isLoading, setIsLoading } = usePageLoading();
+  
+  // Manually control loading state if needed
+  setIsLoading(true); // show spinner
+}
+```
+
+**Existing implementations:**
+- Chat widget already has loading indicator via `TypingIndicator` component (dots animation)
+- Spinner now provides page-level feedback during:
+  - Initial page hydration
+  - Backend API calls fetching portfolio content
+
+### Build Status
+- Clean build successful ✅
+- No TypeScript errors
+- All imports resolved correctly

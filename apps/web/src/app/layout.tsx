@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
+import { PageLoadingProvider } from '@/providers/PageLoadingProvider';
 import './globals.css';
 
 // ── Font Loading ───────────────────────────────────────────────
@@ -96,15 +97,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
-          {/* Skip navigation — WCAG 2.1 AA bypass block */}
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[var(--z-toast)] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-text-inverted focus:shadow-lg"
-          >
-            Skip to main content
-          </a>
+          <PageLoadingProvider>
+            {/* Skip navigation — WCAG 2.1 AA bypass block */}
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[var(--z-toast)] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-text-inverted focus:shadow-lg"
+            >
+              Skip to main content
+            </a>
 
-          {children}
+            {children}
+          </PageLoadingProvider>
         </ThemeProvider>
       </body>
     </html>
