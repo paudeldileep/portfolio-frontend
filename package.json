@@ -1,0 +1,25 @@
+{
+  "name": "portfolio-frontend-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise-grade Micro-Frontend Portfolio Monorepo with AI RAG Assistant",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:unit": "turbo run test:unit",
+    "test:e2e": "turbo run test:e2e",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules packages/*/node_modules apps/*/node_modules .turbo"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "prettier": "^3.4.2"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

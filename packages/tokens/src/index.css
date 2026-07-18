@@ -1,0 +1,7 @@
+/**
+ * Master token barrel — import this single file in any app to get all tokens.
+ * Usage in Next.js layout:  import '@portfolio/tokens/styles'
+ */
+@import './colors.css';
+@import './typography.css';
+@import './spacing.css';
