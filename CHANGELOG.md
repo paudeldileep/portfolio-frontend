@@ -6,6 +6,50 @@
 
 ---
 
+## [2026-07-18] Constants Consolidation — Social Links & Metadata
+
+**Status:** ✅ Complete  
+**Test Results:** ✅ TypeScript typecheck pass · ✅ All 5 unit tests pass
+
+### Problem
+Social media links (GitHub, LinkedIn, Email) and personal metadata (name, title) were hardcoded in multiple components:
+- `HeroSection.tsx` had personal links (paudeldileep, dileepkt, i.am.dileept@gmail.com)
+- `Footer.tsx` had placeholder links (github.com, linkedin.com, hello@example.com)
+- `ContactSection.tsx` had placeholder links (same as Footer)
+- Personal info (name "Dileep T", title "Senior Frontend Engineer") scattered across `layout.tsx`
+
+### Solution
+Created centralized constants file at [apps/web/src/lib/constants.ts](apps/web/src/lib/constants.ts) with:
+- `SOCIAL_LINKS`: Core email/GitHub/LinkedIn URLs
+- `SOCIAL_URLS`: Formatted mailto/https URLs for use in href attributes
+- `SOCIAL_LINK_CONFIG`: Array with metadata (id, label, href, ariaLabel) for component rendering
+- `PERSONAL_INFO`: Name, title, and combined fullTitle
+- `TECH_STACK`: Framework and language info
+- `PAGE_METADATA`: Page title and description templates
+
+### Files Updated
+| File | Changes | Why |
+|---|---|---|
+| [apps/web/src/lib/constants.ts](apps/web/src/lib/constants.ts) | **Created** — New centralized constants file | Single source of truth for all repeated values |
+| [apps/web/src/components/sections/HeroSection.tsx](apps/web/src/components/sections/HeroSection.tsx) | Import `SOCIAL_URLS`, replace hardcoded array with `SOCIAL_URLS.github`, `.linkedin`, `.email` | Use real personal links from constants |
+| [apps/web/src/components/layout/Footer.tsx](apps/web/src/components/layout/Footer.tsx) | Import `SOCIAL_LINK_CONFIG`, `PERSONAL_INFO`, `TECH_STACK`; replace array with constant; use dynamic icon mapping | Ensures footer matches hero with real links; use computed name/title |
+| [apps/web/src/components/sections/ContactSection.tsx](apps/web/src/components/sections/ContactSection.tsx) | Import `SOCIAL_URLS`; replace hardcoded URLs with `SOCIAL_URLS.email`, `.linkedin`, `.github` | Sync with hero section links |
+| [apps/web/src/app/layout.tsx](apps/web/src/app/layout.tsx) | Import `PERSONAL_INFO`, `PAGE_METADATA`; replace hardcoded values in metadata object and open graph | Centralize SEO metadata |
+
+### Benefits
+✅ **Single Source of Truth**: Update email/GitHub/LinkedIn once in constants, reflects everywhere  
+✅ **Consistency**: All components now use the same real personal links (paudeldileep, dileepkt, i.am.dileept@gmail.com)  
+✅ **Maintainability**: Easy to add more constants (e.g., company name, résumé URL, portfolio description) in one place  
+✅ **Type Safety**: Exported as `const` with `as const` for TypeScript narrowing and autocomplete  
+✅ **Documentation**: Constants file includes JSDoc comments explaining purpose of each export  
+
+### Verification
+- ✅ TypeScript: No compilation errors (`pnpm typecheck`)
+- ✅ Tests: All 5 AiChatWidget unit tests passing (`pnpm test:unit`)
+- ✅ No breaking changes to components or types
+
+---
+
 ## [ROOT] Monorepo Scaffolding
 
 **Status:** ✅ Complete
@@ -656,3 +700,31 @@ export default function MyComponent() {
 - Clean build successful ✅
 - No TypeScript errors
 - All imports resolved correctly
+
+---
+
+## [2026-07-18] Chat Scroll Containment & Interactive Scroll Icon
+
+**Reason:** 
+1. Mouse scrolling inside chat window was propagating to page scroll
+2. Scroll indicator icon in hero section was static and not interactive
+
+### Files Modified
+
+#### `apps/web/src/components/AiChatWidget.tsx`
+- Added `overscroll-contain` CSS class to messages container
+- Prevents scroll chaining/propagation to parent document when scrolling inside chat
+- Chat content now scrolls independently from page
+
+#### `apps/web/src/components/sections/HeroSection.tsx`
+- Added `scrollToAbout()` handler function that smoothly scrolls to #about section
+- Changed scroll indicator from `div` to interactive `button` element
+- Updated styling: added `cursor-pointer`, focus ring, padding for keyboard navigation
+- Added proper accessibility: `aria-label="Scroll to about section"`, `title` attribute
+- Maintained animation: indicator still bounces while waiting for user interaction
+
+### User Experience Improvements
+- ✅ Chat scrolling no longer affects page scroll
+- ✅ Scroll icon now responds to clicks with smooth scroll-to-about action
+- ✅ Keyboard accessible (can be focused and activated with Enter/Space)
+- ✅ Visual feedback on focus for accessibility

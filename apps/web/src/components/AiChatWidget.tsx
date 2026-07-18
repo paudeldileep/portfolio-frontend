@@ -317,7 +317,8 @@ export default function AiChatWidget() {
 
           {/* Messages area */}
           <div
-            className="flex-1 overflow-y-auto p-4 space-y-4"
+            data-lenis-prevent
+            className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain"
             role="log"
             aria-label="Conversation messages"
             aria-live="polite"

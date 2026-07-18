@@ -6,21 +6,23 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Github, Linkedin, Mail, ArrowRight } from 'lucide-react';
 import { cn } from '@portfolio/ui';
 import type { Profile } from '@portfolio/api-client';
+import { SOCIAL_URLS } from '@/lib/constants';
 
 interface HeroSectionProps {
   profile: Profile | null;
 }
 
 const TECH_BADGES = [
-  { label: 'TS', imagePath: '/assets/images/typescript.svg', className: 'top-[12%] right-[6%] bg-[#0f2746] text-[#38bdf8]', title: 'TypeScript' },
+  { label: 'Next', imagePath: '/assets/images/nextjs.svg', className: 'top-[12%] right-[6%] bg-[#0f2746] text-[#38bdf8]', title: 'Next.js' },
   { label: 'AI', imagePath: undefined, className: 'top-[2%] left-[8%] bg-[#3a1408] text-[#f59e0b]', title: 'AI' },
   { label: 'Nd', imagePath: '/assets/images/nodejs.webp', className: 'bottom-[24%] right-[2%] bg-[#0f2746] text-[#86efac]', title: 'Node.js' },
+  { label: 'React', imagePath: '/assets/images/react.webp', className: 'bottom-[8%] left-[6%] bg-[#0f2746] text-[#38bdf8]', title: 'React' },
 ];
 
 const SOCIAL_LINKS = [
-  { href: 'https://github.com/paudeldileep',         label: 'GitHub',   icon: Github   },
-  { href: 'https://www.linkedin.com/in/dileepkt/',       label: 'LinkedIn', icon: Linkedin },
-  { href: 'mailto:i.am.dileept@gmail.com',   label: 'Email',    icon: Mail     },
+  { href: SOCIAL_URLS.github,  label: 'GitHub',   icon: Github   },
+  { href: SOCIAL_URLS.linkedin, label: 'LinkedIn', icon: Linkedin },
+  { href: SOCIAL_URLS.email,    label: 'Email',    icon: Mail     },
 ];
 
 const stagger = {
@@ -44,6 +46,13 @@ export default function HeroSection({ profile }: HeroSectionProps) {
   const accentWord  = words.pop();
   const titlePrefix = words.join(' ');
   const summary = profile?.summary?.[1] ?? profile?.summary?.[0] ?? '';
+
+  const scrollToAbout = () => {
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section
@@ -262,11 +271,14 @@ export default function HeroSection({ profile }: HeroSectionProps) {
 
       {/* ── Scroll indicator ─────────────────────────────────────────── */}
       {!reduceMotion && (
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
+        <motion.button
+          type="button"
+          onClick={scrollToAbout}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-1.5 cursor-pointer bg-transparent border-none p-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-offset-2 pointer-events-auto"
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          aria-hidden
+          aria-label="Scroll to about section"
+          title="Scroll down"
         >
           {/* Mouse icon */}
           <div className="h-8 w-5 rounded-full border-2 border-text-muted flex items-start justify-center pt-1.5">
@@ -274,9 +286,10 @@ export default function HeroSection({ profile }: HeroSectionProps) {
               className="h-1.5 w-0.5 rounded-full bg-text-muted"
               animate={{ y: [0, 8, 0], opacity: [1, 0, 1] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              aria-hidden
             />
           </div>
-        </motion.div>
+        </motion.button>
       )}
     </section>
   );

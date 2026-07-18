@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Mail, Github, Linkedin } from 'lucide-react';
 import { SectionHeader, Button, cn } from '@portfolio/ui';
+import { SOCIAL_URLS } from '@/lib/constants';
 
 export default function ContactSection() {
   const reduceMotion = useReducedMotion();
@@ -30,14 +31,14 @@ export default function ContactSection() {
           transition={{ duration: 0.5 }}
         >
           <Button asChild size="lg">
-            <a href="mailto:hello@example.com" aria-label="Send email">
+            <a href={SOCIAL_URLS.email} aria-label="Send email">
               <Mail className="h-4 w-4" aria-hidden />
               Send a message
             </a>
           </Button>
           <Button variant="outline" asChild size="lg">
             <a
-              href="https://linkedin.com"
+              href={SOCIAL_URLS.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn — opens in new tab"
@@ -48,7 +49,7 @@ export default function ContactSection() {
           </Button>
           <Button variant="ghost" asChild size="lg">
             <a
-              href="https://github.com"
+              href={SOCIAL_URLS.github}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub — opens in new tab"

@@ -52,7 +52,7 @@ export default function Navbar() {
       className={cn(
         'fixed inset-x-0 top-0 z-[var(--z-sticky)] transition-all duration-normal',
         scrolled
-          ? 'bg-white/85 backdrop-blur-md border-b border-slate-200 shadow-sm dark:bg-bg-base/85 dark:border-border'
+          ? 'bg-white/85 backdrop-blur-md border-b border-slate-200 shadow-sm dark:bg-bg-base/85 dark:border-border dark:text-text-inverted'
           : 'bg-transparent border-b border-transparent'
       )}
       role="banner"

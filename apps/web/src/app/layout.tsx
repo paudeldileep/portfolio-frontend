@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import { PageLoadingProvider } from '@/providers/PageLoadingProvider';
+import { PERSONAL_INFO, PAGE_METADATA } from '@/lib/constants';
 import './globals.css';
 
 // ── Font Loading ───────────────────────────────────────────────
@@ -23,8 +24,8 @@ const jetbrainsMono = JetBrains_Mono({
 // ── Metadata ───────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: {
-    default: 'Dileep T — Senior Frontend Engineer',
-    template: '%s | Dileep T',
+    default: PERSONAL_INFO.fullTitle,
+    template: `%s | ${PERSONAL_INFO.name}`,
   },
   description:
     'Senior Frontend Engineer with 7+ years building scalable, accessible enterprise applications. Expertise in React, TypeScript, Angular, micro-frontends, and AI-augmented development.',
@@ -39,20 +40,20 @@ export const metadata: Metadata = {
     'Accessibility',
     'Next.js',
   ],
-  authors: [{ name: 'Dileep T' }],
-  creator: 'Dileep T',
+  authors: [{ name: PERSONAL_INFO.name }],
+  creator: PERSONAL_INFO.name,
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    title: 'Dileep T — Senior Frontend Engineer',
+    title: PERSONAL_INFO.fullTitle,
     description:
       'Senior Frontend Engineer specializing in scalable, accessible enterprise web applications.',
-    siteName: 'Dileep T Portfolio',
+    siteName: `${PERSONAL_INFO.name} Portfolio`,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Dileep T — Senior Frontend Engineer',
+    title: PERSONAL_INFO.fullTitle,
     description:
       'Senior Frontend Engineer specializing in scalable, accessible enterprise web applications.',
   },
