@@ -39,6 +39,9 @@ export const metadata: Metadata = {
     'WCAG',
     'Accessibility',
     'Next.js',
+    'Full Stack Engineer',
+    'AI-augmented development',
+    'Portfolio',
   ],
   authors: [{ name: PERSONAL_INFO.name }],
   creator: PERSONAL_INFO.name,
@@ -50,6 +53,16 @@ export const metadata: Metadata = {
     description:
       'Senior Frontend Engineer specializing in scalable, accessible enterprise web applications.',
     siteName: `${PERSONAL_INFO.name} Portfolio`,
+    images: [
+      {
+        url: '/assets/images/profile.png',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  icons: {
+    icon: '/assets/images/profile.png',
   },
   twitter: {
     card: 'summary_large_image',
