@@ -50,9 +50,9 @@ export const SOCIAL_LINK_CONFIG = [
  */
 export const PERSONAL_INFO = {
   name: 'Dileep T',
-  title: 'Senior Frontend Engineer',
+  title: 'Full Stack Engineer',
   email: SOCIAL_LINKS.email,
-  fullTitle: 'Dileep T — Senior Frontend Engineer',
+  fullTitle: 'Dileep T — Full Stack Engineer',
 } as const;
 
 /**
