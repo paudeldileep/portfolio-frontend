@@ -80,6 +80,19 @@ export async function getPortfolioContent(
     });
 
     if (!res.ok) {
+      // Provide user-friendly error messages
+      if (res.status === 429) {
+        return {
+          success: false,
+          error: 'Rate limited (429): Too many requests. Please wait a moment and refresh.',
+        };
+      }
+      if (res.status >= 500) {
+        return {
+          success: false,
+          error: `Backend server error (${res.status}): The service is temporarily unavailable. Please try again later.`,
+        };
+      }
       return {
         success: false,
         error: `Failed to fetch portfolio content: ${res.status} ${res.statusText}`,
@@ -90,7 +103,7 @@ export async function getPortfolioContent(
     return { success: true, data };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Network error';
-    return { success: false, error: message };
+    return { success: false, error: `Network error: ${message}` };
   }
 }
 
@@ -109,6 +122,19 @@ export async function sendChatMessage(
     });
 
     if (!res.ok) {
+      // Provide user-friendly error messages
+      if (res.status === 429) {
+        return {
+          success: false,
+          error: 'Rate limited (429): You are sending messages too quickly. The backend allows 10 requests per minute per IP. Please wait before trying again.',
+        };
+      }
+      if (res.status >= 500) {
+        return {
+          success: false,
+          error: `Backend server error (${res.status}): The AI service is temporarily unavailable. Please try again in a moment.`,
+        };
+      }
       return {
         success: false,
         error: `Chat request failed: ${res.status} ${res.statusText}`,
@@ -119,7 +145,7 @@ export async function sendChatMessage(
     return { success: true, data };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Network error';
-    return { success: false, error: message };
+    return { success: false, error: `Connection error: ${message}` };
   }
 }
 

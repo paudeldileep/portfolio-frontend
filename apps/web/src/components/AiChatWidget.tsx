@@ -25,6 +25,7 @@ import { Bot, Send, X, MessageCircle, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Button, Badge, cn } from '@portfolio/ui';
 import { sendChatMessage } from '@portfolio/api-client';
+import ChatErrorOverlay from './ChatErrorOverlay';
 
 // ── Types ──────────────────────────────────────────────────────
 interface Message {
@@ -184,7 +185,8 @@ export default function AiChatWidget() {
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } else {
-      setError("I couldn't get a response right now. Please try again.");
+      // Pass the actual error message from the API
+      setError(result.error);
     }
   }, [loading]);
 
@@ -379,9 +381,18 @@ export default function AiChatWidget() {
             )}
 
             {error && (
-              <p role="alert" className="text-xs text-error text-center px-4 py-2 rounded-md bg-red-500/10 border border-red-500/20">
-                {error}
-              </p>
+              <ChatErrorOverlay
+                error={error}
+                onDismiss={() => setError(null)}
+                onRetry={() => {
+                  if (messages.length > 0) {
+                    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+                    if (lastUserMessage) {
+                      sendMessage(lastUserMessage.content);
+                    }
+                  }
+                }}
+              />
             )}
 
             <div ref={messagesEndRef} aria-hidden />

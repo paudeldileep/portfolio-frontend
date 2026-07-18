@@ -6,6 +6,114 @@
 
 ---
 
+## [2026-07-18] Backend Error Handling — Rate Limit & Server Down Pages
+
+**Status:** ✅ Complete  
+**Test Results:** ✅ TypeScript typecheck pass · ✅ All 5 unit tests pass
+
+### Problem
+Backend failures (rate limiting @ 10 req/min, server down, network errors) were not visually communicated to users:
+- Portfolio content failures showed silent null data with no error indication
+- Chat endpoint failures displayed generic error text without retry capability
+- Rate limit (429) errors not distinguished from other failures
+- No user-friendly messaging for different error scenarios
+
+### Solution
+Built comprehensive error handling system with animated error pages:
+
+**1. BackendErrorPage Component** ([apps/web/src/components/BackendErrorPage.tsx](apps/web/src/components/BackendErrorPage.tsx))
+- Full-screen error display with Framer Motion animations (staggered reveal, pulsing icon)
+- Detects error type: rate limit (429), server error (5xx), or network error
+- Customized messaging and styling per error type (orange/red/blue gradients)
+- Retry button (when provided), Go Home link, technical error details
+- Breathing animation for rate limit countdown message
+
+**2. ChatErrorOverlay Component** ([apps/web/src/components/ChatErrorOverlay.tsx](apps/web/src/components/ChatErrorOverlay.tsx))
+- Non-intrusive alert-style error overlay for in-chat failures
+- Animated entrance/exit with toast-like positioning
+- Retry and Dismiss buttons for quick recovery
+- Respects `aria-live="polite"` for accessibility
+- Contextual icon (Clock for rate limit, AlertCircle for others)
+
+**3. Enhanced API Client** ([packages/api-client/src/client.ts](packages/api-client/src/client.ts))
+- User-friendly error messages for `getPortfolioContent()` and `sendChatMessage()`
+- Specific handling for HTTP 429 (rate limit): explains 10 req/min limit
+- Specific handling for 5xx errors: clear "service unavailable" messaging
+- Network error messages prefixed for clarity
+- Maintains retry logic (max 2 attempts with exponential backoff) for transient failures
+
+### Files Updated
+| File | Changes | Why |
+|---|---|---|
+| [apps/web/src/app/page.tsx](apps/web/src/app/page.tsx) | Import `BackendErrorPage`, display it when `getPortfolioContent()` fails | Show error page instead of silent null fallback |
+| [apps/web/src/components/AiChatWidget.tsx](apps/web/src/components/AiChatWidget.tsx) | Import `ChatErrorOverlay`, pass actual error message to it, add retry logic | Display rich error UI with retry capability for chat failures |
+| [packages/api-client/src/client.ts](packages/api-client/src/client.ts) | Enhanced error messages with HTTP status detection and user-friendly text | Provide context-specific guidance for rate limits, server down, network issues |
+| [apps/web/src/components/BackendErrorPage.tsx](apps/web/src/components/BackendErrorPage.tsx) | **Created** — Full-screen error page with animations | Handle portfolio content fetch failures gracefully |
+| [apps/web/src/components/ChatErrorOverlay.tsx](apps/web/src/components/ChatErrorOverlay.tsx) | **Created** — Inline error overlay for chat | Display chat-specific failures without disrupting UI |
+
+### Error Flow
+**Content Load Failure:**
+```
+getPortfolioContent() → HTTP 429/5xx/network error
+→ return { success: false, error: "Rate limited..." }
+→ page.tsx checks result.success
+→ Renders BackendErrorPage with error message
+→ User sees animated error, status info, retry option
+```
+
+**Chat Send Failure:**
+```
+sendChatMessage() → HTTP 429/5xx/network error
+→ return { success: false, error: "Rate limited..." }
+→ AiChatWidget catches in sendMessage()
+→ setError(result.error)
+→ ChatErrorOverlay renders with message
+→ User can dismiss or retry last message
+```
+
+### Error Messages
+**Rate Limit (429):**
+- **Content**: "Rate limited (429): Too many requests. Please wait a moment and refresh."
+- **Chat**: "Rate limited (429): You are sending messages too quickly. The backend allows 10 requests per minute per IP. Please wait before trying again."
+
+**Server Error (5xx):**
+- **Content**: "Backend server error: The service is temporarily unavailable. Please try again later."
+- **Chat**: "Backend server error: The AI service is temporarily unavailable. Please try again in a moment."
+
+**Network Error:**
+- **Content**: "Network error: [specific error message]"
+- **Chat**: "Connection error: [specific error message]"
+
+### Animations & UX
+- **BackendErrorPage**: Staggered fade-in animation (icon → title → description → actions)
+- **Icon**: Pulsing scale animation (1 → 1.05 → 1) over 2s loop
+- **Icon Hover**: Scale to 1.1 on hover
+- **Error Details**: Monospace code block showing raw error for debugging
+- **Rate Limit Message**: Breathing opacity animation while waiting
+- **ChatErrorOverlay**: Smooth slide-in/out with backdrop blur, motion-based dismiss
+
+### Rate Limit Considerations
+The backend enforces **10 requests/minute per IP**:
+- Content endpoint (GET /content): Cached for 12h via ISR, only initial page load hits backend
+- Chat endpoint (POST /chat): Live requests, each message consumes 1 quota
+- Error messaging explicitly explains this limit to users
+
+### Benefits
+✅ **User Clarity**: Know exactly why the app isn't working (rate limit vs server down vs network)  
+✅ **Retry Capability**: Explicit retry buttons for transient failures  
+✅ **Rate Limit Awareness**: Messaging explains the 10 req/min constraint  
+✅ **Graceful Degradation**: Animated errors are visually appealing, not jarring  
+✅ **Accessibility**: Error overlays use `aria-live="polite"`, buttons are keyboard-accessible  
+✅ **Developer Debug**: Technical error details in gray text for troubleshooting  
+
+### Verification
+- ✅ TypeScript: No compilation errors
+- ✅ Tests: All 5 AiChatWidget unit tests passing
+- ✅ Error detection: 429, 5xx, and network errors all handled
+- ✅ Message passing: Real error strings from API flow through to UI
+
+---
+
 ## [2026-07-18] Constants Consolidation — Social Links & Metadata
 
 **Status:** ✅ Complete  
