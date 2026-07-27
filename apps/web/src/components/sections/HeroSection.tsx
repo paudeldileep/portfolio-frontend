@@ -184,18 +184,20 @@ export default function HeroSection({ profile }: HeroSectionProps) {
         >
           <div
             aria-hidden
-            className="absolute inset-0 m-auto h-[430px] w-[430px] rounded-full border-[1.5px] border-blue-300/70 dark:border-blue-300/28"
+            className="absolute inset-0 m-auto h-[430px] w-[430px] rounded-full border-[1.5px] border-blue-300/70 dark:border-blue-300/24"
           />
           <div
             aria-hidden
-            className="absolute inset-0 m-auto h-[510px] w-[510px] rounded-full border border-blue-200/60 dark:border-blue-200/16"
+            className="absolute inset-0 m-auto h-[510px] w-[510px] rounded-full border border-blue-200/60 dark:border-blue-200/14"
           />
-
+          <div
+            aria-hidden
+            className="absolute inset-0 m-auto z-[8] h-[510px] w-[510px] rounded-full border-[1.5px] border-blue-200/28 border-t-transparent border-l-transparent border-r-transparent dark:border-blue-200/22"
+          />
           <div
             className={cn(
               'relative z-10 h-[520px] w-[390px] overflow-hidden',
-              '[mask-image:linear-gradient(to_bottom,black_0%,black_64%,transparent_100%)]',
-              '[-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_64%,transparent_100%)]'
+              '[clip-path:circle(47%_at_50%_49%)]',
             )}
           >
             <Image
@@ -203,22 +205,9 @@ export default function HeroSection({ profile }: HeroSectionProps) {
               alt="Dileep Kumar — Senior Frontend Engineer"
               fill
               sizes="(max-width: 1024px) 80vw, 390px"
-              className="object-contain object-top scale-[1.02]"
+              className="object-contain object-[center_10%] scale-[1.05] translate-y-[11%]"
               priority
               onError={() => setImageError(true)}
-            />
-            {/* Extra soft veil at the bottom to remove hard cut-lines over light/dark backgrounds */}
-            <div
-              aria-hidden
-              className="absolute bottom-0 left-0 right-0 h-56 bg-gradient-to-t from-[#fbfcff] via-[#fbfcff]/92 to-transparent dark:from-bg-base dark:via-bg-base/92"
-            />
-            <div
-              aria-hidden
-              className="absolute bottom-0 left-0 right-0 h-16 bg-[#fbfcff] dark:bg-bg-base"
-            />
-            <div
-              aria-hidden
-              className="absolute bottom-12 left-0 right-0 h-24 bg-gradient-to-t from-[#fbfcff] via-[#fbfcff]/85 to-transparent dark:from-bg-base dark:via-bg-base/85"
             />
             {imageError && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-text-muted">
@@ -229,16 +218,7 @@ export default function HeroSection({ profile }: HeroSectionProps) {
               </div>
             )}
           </div>
-
-          {/* Foreground veil: hides remaining hard lower cut-line from source image */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 bottom-[-24px] z-[19] h-[150px] w-[620px] -translate-x-1/2 rounded-[50%] bg-[#fbfcff]/96 blur-[16px] dark:bg-bg-base/96"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 bottom-[-46px] z-[18] h-[280px] w-[640px] -translate-x-1/2 rounded-[50%] bg-gradient-to-t from-[#fbfcff] via-[#fbfcff]/95 to-transparent dark:from-bg-base dark:via-bg-base/95"
-          />
+          
 
           {TECH_BADGES.map(({ label, imagePath, className, title }, i) => (
             <motion.div
