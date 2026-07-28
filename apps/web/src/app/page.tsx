@@ -12,13 +12,14 @@ import AiChatWidget from '@/components/AiChatWidget';
 import BackendErrorPage from '@/components/BackendErrorPage';
 
 /**
- * Page-level ISR: revalidate every 12 hours.
- * Portfolio content rarely changes; ISR gives us near-static performance
- * with automatic freshness — the best of SSG + SSR.
+ * Render at request time so an unavailable external API cannot block Vercel's
+ * build-time static export.
  */
-export const revalidate = 43200; // 12 hours
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
+  // Cache successful content so subsequent requests do not repeatedly wake the
+  // free-tier backend. The route remains dynamic and is not fetched at build time.
   const result = await getPortfolioContent({ revalidate: 43200 });
 
   // If backend is unavailable, show error page with retry capability
