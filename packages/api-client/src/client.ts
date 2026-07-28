@@ -19,14 +19,12 @@ import type {
 
 // ── Configuration ──────────────────────────────────────────────
 
-const DEFAULT_BASE_URL = 'https://portfolio-rag-backend-b0cm.onrender.com';
-
 function getBaseUrl(): string {
   // Works in Next.js (browser & server) and Node test environments
   if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
   }
-  return DEFAULT_BASE_URL;
+  throw new Error('NEXT_PUBLIC_API_URL is not configured');
 }
 
 // ── Internal helpers ───────────────────────────────────────────
