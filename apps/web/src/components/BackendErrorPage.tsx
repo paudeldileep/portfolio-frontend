@@ -92,19 +92,10 @@ export default function BackendErrorPage({ error, onRetry }: BackendErrorPagePro
               </p>
             </details>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Button onClick={retry} loading={isRetrying} className="flex-1">
+            <div className="mt-7">
+              <Button onClick={retry} loading={isRetrying} className="w-full">
                 {!isRetrying && <RefreshCw className="h-4 w-4" aria-hidden />}
                 Reconnect
-              </Button>
-              <Button variant="outline" asChild className="flex-1 border-slate-600 text-slate-300">
-                <a
-                  href="https://portfolio-rag-backend-b0cm.onrender.com/health"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Check service status
-                </a>
               </Button>
             </div>
           </div>

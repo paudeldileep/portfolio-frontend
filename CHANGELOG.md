@@ -476,7 +476,7 @@ Typed, zero-dependency async fetch client bridging the frontend monorepo to the 
 **Session goal:** Wire the deployed FastAPI backend into the frontend monorepo.
 
 ### Backend
-- **Live URL:** `https://portfolio-rag-backend-b0cm.onrender.com`
+- **Live URL:** configured through `NEXT_PUBLIC_API_URL`
 - **Verified endpoints:**
   - `GET /health` → `{ "status": "ok" }` ✅
   - `GET /content` → full portfolio JSON returned ✅
@@ -484,16 +484,16 @@ Typed, zero-dependency async fetch client bridging the frontend monorepo to the 
 ### Files Changed
 
 #### `apps/web/.env.local` _(created)_
-- `NEXT_PUBLIC_API_URL=https://portfolio-rag-backend-b0cm.onrender.com`
+- `NEXT_PUBLIC_API_URL=<configured backend URL>`
 - `NEXT_PUBLIC_SITE_URL=http://localhost:3000`
 - This file is `.gitignore`d — never committed. Each deployment environment supplies its own copy.
 
 #### `packages/api-client/src/client.ts`
-- Updated `DEFAULT_BASE_URL` fallback from `http://localhost:8000` to `https://portfolio-rag-backend-b0cm.onrender.com`
-- Ensures the client works correctly in any environment where `NEXT_PUBLIC_API_URL` is not set (e.g. standalone Node scripts, test runners without `.env.local`)
+- Configured the backend address through `NEXT_PUBLIC_API_URL`
+- Keeps the backend address environment-specific rather than embedding it in the client
 
 #### `docker-compose.yml`
-- Updated `web` service env default: `NEXT_PUBLIC_API_URL:-https://portfolio-rag-backend-b0cm.onrender.com`
+- Updated the `web` service to receive `NEXT_PUBLIC_API_URL` from its environment
 - Docker deployments now point to the live backend out of the box; override by setting the env var in the host environment
 
 ### Build Verification
