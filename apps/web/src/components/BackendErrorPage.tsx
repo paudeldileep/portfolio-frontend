@@ -1,7 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { AlertCircle, RefreshCw, Wifi, Clock } from 'lucide-react';
+import * as React from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { AlertTriangle, RefreshCw, Radio, WifiOff } from 'lucide-react';
 import { Button } from '@portfolio/ui';
 
 interface BackendErrorPageProps {
@@ -10,152 +11,109 @@ interface BackendErrorPageProps {
 }
 
 export default function BackendErrorPage({ error, onRetry }: BackendErrorPageProps) {
-  // Determine error type from message
-  const isRateLimit = error.includes('429') || error.includes('rate limit');
-  const isServerDown = error.includes('5') && error.includes('status');
-  const isNetworkError = error.includes('Network') || error.includes('fetch');
+  const reduceMotion = useReducedMotion();
+  const [isRetrying, startRetry] = React.useTransition();
+  const isRateLimit = /429|rate limit/i.test(error);
+  const isTimeout = /timed out|abort/i.test(error);
+  const isServerDown = /server error|50[0-9]|fetch|network/i.test(error);
+  const Icon = isRateLimit ? Radio : isTimeout ? WifiOff : AlertTriangle;
 
-  const errorConfig = {
-    icon: isRateLimit ? Clock : isServerDown ? AlertCircle : Wifi,
-    title: isRateLimit ? 'Too Many Requests' : isServerDown ? 'Server Temporarily Down' : 'Connection Error',
-    description: isRateLimit
-      ? "You've hit the rate limit. Please wait a minute and try again."
+  const retry = () => {
+    startRetry(() => {
+      if (onRetry) onRetry();
+      else window.location.reload();
+    });
+  };
+
+  const title = isRateLimit
+    ? 'Signal rate limited'
+    : isTimeout
+      ? 'Wake-up took too long'
       : isServerDown
-        ? 'The backend service is temporarily unavailable. Our team has been notified.'
-        : 'Unable to connect to the backend. Please check your internet connection.',
-    bgGradient: isRateLimit
-      ? 'from-orange-500/10 to-yellow-500/10'
-      : isServerDown
-        ? 'from-red-500/10 to-pink-500/10'
-        : 'from-blue-500/10 to-cyan-500/10',
-    borderColor: isRateLimit ? 'border-orange-500/30' : isServerDown ? 'border-red-500/30' : 'border-blue-500/30',
-    accentColor: isRateLimit ? 'text-orange-500' : isServerDown ? 'text-red-500' : 'text-blue-500',
-  };
+        ? 'Backend temporarily offline'
+        : 'Connection interrupted';
 
-  const Icon = errorConfig.icon;
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const pulseVariants = {
-    animate: {
-      scale: [1, 1.05, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-      },
-    },
-  };
+  const description = isRateLimit
+    ? 'The service received too many requests. Give it a minute, then reconnect.'
+    : isTimeout
+      ? 'The free-tier service did not finish waking within the expected window. A retry usually resolves it.'
+      : 'The portfolio service could not be reached. It may be restarting or waking from sleep.';
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-bg-base via-bg-surface to-bg-base px-4">
-      {/* Animated background grid (optional) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-grid opacity-5" />
-      </div>
+    <div className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[#07101f] px-5 text-slate-100">
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(248,113,113,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(248,113,113,.12) 1px, transparent 1px)',
+          backgroundSize: '42px 42px',
+          maskImage: 'radial-gradient(circle at center, black, transparent 78%)',
+        }}
+      />
+      <div aria-hidden className="absolute h-80 w-80 rounded-full bg-rose-500/10 blur-[100px]" />
 
-      <motion.div
-        className="relative z-10 w-full max-w-md"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <motion.section
+        className="relative w-full max-w-xl"
+        initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
       >
-        {/* Icon container with pulse animation */}
-        <motion.div
-          className={`mx-auto mb-6 w-20 h-20 rounded-full bg-gradient-to-br ${errorConfig.bgGradient} border-2 ${errorConfig.borderColor} flex items-center justify-center`}
-          variants={itemVariants}
-          animate="animate"
-          whileHover={{ scale: 1.1 }}
-        >
-          <motion.div variants={pulseVariants} animate="animate">
-            <Icon className={`w-10 h-10 ${errorConfig.accentColor}`} />
-          </motion.div>
-        </motion.div>
+        <div className="mb-6 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.22em] text-rose-300">
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-rose-400" />
+          Connection exception
+        </div>
 
-        {/* Error title */}
-        <motion.h1
-          className="text-center text-2xl md:text-3xl font-bold text-text-primary mb-2"
-          variants={itemVariants}
-        >
-          {errorConfig.title}
-        </motion.h1>
+        <div className="overflow-hidden rounded-2xl border border-rose-400/20 bg-slate-950/75 shadow-2xl shadow-rose-950/50 backdrop-blur-xl">
+          <div className="flex items-center gap-2 border-b border-white/10 px-5 py-3">
+            <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-700" />
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-700" />
+            <span className="ml-2 font-mono text-[11px] text-slate-500">portfolio.status</span>
+          </div>
 
-        {/* Error description */}
-        <motion.p className="text-center text-text-muted mb-8 leading-relaxed" variants={itemVariants}>
-          {errorConfig.description}
-        </motion.p>
+          <div className="p-6 sm:p-8">
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-rose-400/25 bg-rose-400/10 text-rose-300">
+              <Icon className="h-7 w-7" aria-hidden />
+            </div>
 
-        {/* Error details (technical) */}
-        <motion.div
-          className="mb-8 p-4 bg-bg-elevated rounded-lg border border-border"
-          variants={itemVariants}
-        >
-          <p className="text-xs text-text-muted font-mono break-words">
-            {error}
-          </p>
-        </motion.div>
+            <p className="mt-6 font-mono text-xs uppercase tracking-widest text-rose-400">
+              Error: service_unavailable
+            </p>
+            <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">{title}</h1>
+            <p className="mt-3 leading-relaxed text-slate-400">{description}</p>
 
-        {/* Action buttons */}
-        <motion.div className="flex flex-col gap-3 sm:flex-row sm:gap-4" variants={itemVariants}>
-          <Button
-            onClick={onRetry}
-            className="flex-1 flex items-center justify-center gap-2"
-            disabled={!onRetry}
-          >
-            <RefreshCw className="w-4 h-4" />
-            Retry
-          </Button>
-          <Button variant="outline" asChild className="flex-1">
-            <a href="/">Go Home</a>
-          </Button>
-        </motion.div>
+            <details className="mt-6 rounded-lg border border-white/10 bg-black/25 px-4 py-3">
+              <summary className="cursor-pointer font-mono text-xs text-slate-500">
+                View diagnostic details
+              </summary>
+              <p className="mt-3 break-words font-mono text-xs leading-relaxed text-slate-500">
+                {error}
+              </p>
+            </details>
 
-        {/* Waiting message for rate limit */}
-        {isRateLimit && (
-          <motion.p
-            className="mt-6 text-center text-sm text-text-muted italic"
-            variants={itemVariants}
-            animate={{
-              opacity: [0.6, 1, 0.6],
-              transition: { duration: 2, repeat: Infinity },
-            }}
-          >
-            ⏳ Please wait before retrying...
-          </motion.p>
-        )}
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Button onClick={retry} loading={isRetrying} className="flex-1">
+                {!isRetrying && <RefreshCw className="h-4 w-4" aria-hidden />}
+                Reconnect
+              </Button>
+              <Button variant="outline" asChild className="flex-1 border-slate-600 text-slate-300">
+                <a
+                  href="https://portfolio-rag-backend-b0cm.onrender.com/health"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Check service status
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
 
-        {/* Status page link for server down */}
-        {isServerDown && (
-          <motion.p className="mt-6 text-center text-sm" variants={itemVariants}>
-            <a
-              href="https://portfolio-rag-backend-b0cm.onrender.com/health"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Check backend status →
-            </a>
-          </motion.p>
-        )}
-      </motion.div>
+        <p className="mt-5 text-center font-mono text-[11px] uppercase tracking-widest text-slate-600">
+          Your browser and portfolio UI are working normally
+        </p>
+      </motion.section>
     </div>
   );
 }

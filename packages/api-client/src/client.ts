@@ -34,6 +34,26 @@ function getBaseUrl(): string {
 const RETRYABLE_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
 const MAX_RETRIES = 2;
 const BASE_DELAY_MS = 500;
+// Render's free tier can take roughly 30 seconds to wake from sleep.
+// Keep this below the former 60-second static-generation deadline while
+// allowing a normal cold start to complete.
+const CONTENT_REQUEST_TIMEOUT_MS = 45_000;
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(
+      () => reject(new Error(`Request timed out after ${timeoutMs}ms`)),
+      timeoutMs
+    );
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId !== undefined) clearTimeout(timeoutId);
+  }
+}
 
 async function fetchWithRetry(
   url: string,
@@ -71,13 +91,19 @@ export async function getPortfolioContent(
   nextOptions?: { revalidate?: number | false; tags?: string[] }
 ): Promise<ApiResult<PortfolioContent>> {
   try {
-    const res = await fetch(`${getBaseUrl()}/content`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      // Next.js App Router extended fetch options for ISR
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...(nextOptions ? { next: nextOptions } : { cache: 'no-store' as any }),
-    });
+    const res = await withTimeout(
+      fetch(`${getBaseUrl()}/content`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        // Abort the underlying request where the runtime supports it. The
+        // Promise timeout also protects builds whose patched fetch ignores it.
+        signal: AbortSignal.timeout(CONTENT_REQUEST_TIMEOUT_MS),
+        // Next.js App Router extended fetch options for ISR
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ...(nextOptions ? { next: nextOptions } : { cache: 'no-store' as any }),
+      }),
+      CONTENT_REQUEST_TIMEOUT_MS
+    );
 
     if (!res.ok) {
       // Provide user-friendly error messages
