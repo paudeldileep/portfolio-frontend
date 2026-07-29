@@ -59,6 +59,18 @@ describe('post content utilities', () => {
     ).toThrow(/broken-post\.mdx.*title/i);
   });
 
+  it('rejects publication dates that are not ISO 8601 timestamps', () => {
+    expect(() =>
+      parsePostSource(
+        validPost.replace(
+          'publishedAt: "2026-07-29T12:00:00Z"',
+          'publishedAt: "July 29, 2026"',
+        ),
+        'invalid-date.mdx',
+      ),
+    ).toThrow(/invalid-date\.mdx.*publishedAt/i);
+  });
+
   it('rejects unknown authors', () => {
     expect(() =>
       parsePostSource(

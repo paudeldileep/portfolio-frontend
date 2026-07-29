@@ -195,10 +195,20 @@
     border-radius: var(--radius-lg);
   }
 
-  .blog-prose table {
-    display: block;
+  .blog-prose .blog-table-scroll {
     width: 100%;
     overflow-x: auto;
+    border-radius: var(--radius-lg);
+  }
+
+  .blog-prose .blog-table-scroll:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .blog-prose table {
+    width: 100%;
+    min-width: 36rem;
     border-collapse: collapse;
   }
 

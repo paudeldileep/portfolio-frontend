@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const configuredBaseUrl = process.env.PLAYWRIGHT_BASE_URL;
+const localBaseUrl = 'http://localhost:3100';
+const localBlogOrigin = 'http://localhost:3101';
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -14,11 +18,10 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
+    baseURL: configuredBaseUrl ?? localBaseUrl,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    // WCAG contrast checks need a non-headless browser that renders CSS
     headless: true,
   },
 
@@ -30,10 +33,30 @@ export default defineConfig({
     { name: 'mobile-safari', use: { ...devices['iPhone 14'] } },
   ],
 
-  webServer: {
-    command: 'pnpm build && pnpm start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: configuredBaseUrl
+    ? undefined
+    : [
+        {
+          command:
+            'pnpm --dir ../blog build && pnpm --dir ../blog exec next start --port 3101',
+          url: `${localBlogOrigin}/blog`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 180_000,
+          env: {
+            NEXT_PUBLIC_PORTFOLIO_URL: localBaseUrl,
+            NEXT_PUBLIC_SITE_URL: localBaseUrl,
+          },
+        },
+        {
+          command: 'pnpm build && pnpm exec next start --port 3100',
+          url: localBaseUrl,
+          reuseExistingServer: !process.env.CI,
+          timeout: 180_000,
+          env: {
+            BLOG_ORIGIN: localBlogOrigin,
+            NEXT_PUBLIC_BLOG_URL: `${localBaseUrl}/blog`,
+            NEXT_PUBLIC_SITE_URL: localBaseUrl,
+          },
+        },
+      ],
 });
