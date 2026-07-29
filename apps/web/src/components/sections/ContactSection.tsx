@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { Mail, Github, Linkedin } from 'lucide-react';
-import { SectionHeader, Button, cn } from '@portfolio/ui';
+import { SectionHeader, Button } from '@portfolio/ui';
 import { SOCIAL_URLS } from '@/lib/constants';
 
 export default function ContactSection() {

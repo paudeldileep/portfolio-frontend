@@ -92,11 +92,11 @@ export default function SkillsSection({ skills }: SkillsSectionProps) {
                   viewport={{ once: true, amount: 0.01 }}
                   transition={{ duration: 0.4, delay: i * 0.06 }}
                 >
-                  <div
-                    role="region"
+                  <button
+                    type="button"
                     aria-label={meta?.label ?? key}
                     className={cn(
-                      'rounded-card border bg-bg-surface p-6',
+                      'w-full rounded-card border bg-bg-surface p-6 text-left',
                       'transition-all duration-normal cursor-pointer',
                       isActive
                         ? 'border-primary shadow-md shadow-primary/10'
@@ -109,7 +109,6 @@ export default function SkillsSection({ skills }: SkillsSectionProps) {
                         setActiveCategory(isActive ? null : key);
                       }
                     }}
-                    tabIndex={0}
                     aria-expanded={isActive}
                   >
                     {/* Category Header */}
@@ -136,7 +135,7 @@ export default function SkillsSection({ skills }: SkillsSectionProps) {
                         </Badge>
                       )}
                     </div>
-                  </div>
+                  </button>
                 </motion.div>
               );
             })}

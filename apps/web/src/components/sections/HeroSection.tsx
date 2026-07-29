@@ -214,7 +214,7 @@ export default function HeroSection({ profile }: HeroSectionProps) {
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-3xl font-bold text-primary">
                 DK
               </div>
-              <p className="text-xs text-center px-4">Missing Dileep's profile image<br />profile.png</p>
+              <p className="text-xs text-center px-4">Missing Dileep’s profile image<br />profile.png</p>
               </div>
             )}
           </div>

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import { PageLoadingProvider } from '@/providers/PageLoadingProvider';
-import { PERSONAL_INFO, PAGE_METADATA } from '@/lib/constants';
+import { PERSONAL_INFO } from '@/lib/constants';
 import './globals.css';
 
 // ── Font Loading ───────────────────────────────────────────────

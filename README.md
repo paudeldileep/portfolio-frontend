@@ -15,10 +15,11 @@ portfolio-frontend/
 └── apps/
     ├── web/             # Next.js 15 — Single-page parallax portfolio (SSG/ISR)
     ├── admin/           # [Future] Content Admin MFE (SSR + Auth)
-    └── blog/            # [Future] MDX Blog MFE (SSG/ISR)
+    └── blog/            # Next.js blog MFE scaffold (MDX content engine next)
 ```
 
-See [architecture.md](./architecture.md) and [plan.md](./plan.md) for full details.
+Detailed architecture, implementation status, and session handoff notes are
+maintained locally outside the public repository.
 
 ---
 

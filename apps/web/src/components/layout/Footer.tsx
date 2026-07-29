@@ -19,7 +19,7 @@ export default function Footer() {
 
         <nav aria-label="Footer social links">
           <ul className="flex items-center gap-4 list-none" role="list">
-            {SOCIAL_LINK_CONFIG.map(({ href, label, id, ariaLabel: ariaLabelProp }) => {
+            {SOCIAL_LINK_CONFIG.map(({ href, id, ariaLabel: ariaLabelProp }) => {
               const Icon = { email: Mail, github: Github, linkedin: Linkedin }[id];
               return (
                 <li key={id}>

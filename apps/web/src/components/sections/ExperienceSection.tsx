@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronDown, Building2, Calendar } from 'lucide-react';
-import { SectionHeader, Badge, cn } from '@portfolio/ui';
+import { SectionHeader, cn } from '@portfolio/ui';
 import type { Experience } from '@portfolio/api-client';
 
 interface ExperienceSectionProps {
