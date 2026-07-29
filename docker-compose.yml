@@ -1,0 +1,60 @@
+services:
+  # ── Portfolio Frontend ───────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: portfolio-web
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:?NEXT_PUBLIC_API_URL is required}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - portfolio-net
+
+  # ── AI Backend (FastAPI) ─────────────────────────────────────
+  api:
+    build:
+      context: ../portfolio-ai-backend
+      dockerfile: Dockerfile
+    container_name: portfolio-api
+    ports:
+      - '8000:8000'
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - SUPABASE_CONTENT_TABLE=${SUPABASE_CONTENT_TABLE:-portfolio_content}
+      - QDRANT_URL=${QDRANT_URL}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - QDRANT_COLLECTION=${QDRANT_COLLECTION}
+    restart: unless-stopped
+    networks:
+      - portfolio-net
+
+  # ── Playwright E2E Test Runner ───────────────────────────────
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.49.1-jammy
+    container_name: portfolio-e2e
+    working_dir: /app/apps/web
+    volumes:
+      - .:/app
+    command: pnpm test:e2e
+    environment:
+      - PLAYWRIGHT_BASE_URL=http://web:3000
+      - CI=true
+    depends_on:
+      - web
+    networks:
+      - portfolio-net
+    profiles:
+      - test  # Only runs when: docker compose --profile test up
+
+networks:
+  portfolio-net:
+    driver: bridge

@@ -1,0 +1,66 @@
+---
+title: "Building an accessible content pipeline"
+description: "A small, typed publishing foundation that catches content mistakes before readers encounter them."
+author: "dileep"
+publishedAt: "2026-07-29T12:00:00Z"
+tags:
+  - "Accessibility"
+  - "Architecture"
+featured: true
+draft: false
+image: "/blog-static/images/posts/content-pipeline.svg"
+---
+
+Good publishing systems make the correct path the easy path. For this blog,
+that starts with a deliberately small pipeline: validated metadata, static
+generation, and accessible HTML.
+
+## Start with a contract
+
+A content contract turns an informal convention into something the build can
+verify:
+
+```ts
+type PostMetadata = {
+  title: string;
+  author: string;
+  publishedAt: string;
+  tags: string[];
+};
+```
+
+The implementation validates that contract before a page is generated. A
+misspelled author or malformed date becomes a useful build error instead of a
+broken production page.
+
+<Callout title="Keep the first release small">
+  Local MDX is enough for the initial blog. A typed content module gives us a
+  clean place to switch to an API later, without building the admin system now.
+</Callout>
+
+## Preserve semantic structure
+
+Articles should remain understandable before visual styling is applied:
+
+1. Use one descriptive page heading.
+2. Keep heading levels in a logical order.
+3. Give links meaningful text, such as the [Web Content Accessibility
+   Guidelines](https://www.w3.org/WAI/standards-guidelines/wcag/).
+4. Provide alternatives for informative images.
+
+![A diagram showing MDX content passing through validation and static generation before reaching the reader.](/blog-static/images/posts/content-pipeline.svg)
+
+> Accessibility is most durable when it is part of the publishing path, not a
+> review step added at the end.
+
+## Make decisions visible
+
+| Concern | First release | Later |
+| --- | --- | --- |
+| Authoring | Repository-owned MDX | Authenticated admin UI |
+| Content source | Local files | Database API |
+| Rendering | Static generation | Static generation with revalidation |
+| Permissions | Git access | Owner and author roles |
+
+This boundary keeps the present implementation understandable while leaving a
+feasible route to multi-author publishing.

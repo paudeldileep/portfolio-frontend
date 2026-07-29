@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="title description">
+  <title id="title">Accessible content pipeline</title>
+  <desc id="description">MDX content moves through metadata validation and static generation before reaching readers.</desc>
+  <rect width="960" height="420" rx="32" fill="#0f172a"/>
+  <g fill="none" stroke="#38bdf8" stroke-width="5">
+    <path d="M270 210h100"/>
+    <path d="M590 210h100"/>
+  </g>
+  <g fill="#e2e8f0" font-family="system-ui, sans-serif" text-anchor="middle">
+    <rect x="50" y="125" width="220" height="170" rx="22" fill="#1e293b" stroke="#475569"/>
+    <text x="160" y="195" font-size="30" font-weight="700">MDX</text>
+    <text x="160" y="235" font-size="20" fill="#94a3b8">content + metadata</text>
+    <rect x="370" y="125" width="220" height="170" rx="22" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="480" y="195" font-size="30" font-weight="700">Validate</text>
+    <text x="480" y="235" font-size="20" fill="#94a3b8">types + structure</text>
+    <rect x="690" y="125" width="220" height="170" rx="22" fill="#1e293b" stroke="#475569"/>
+    <text x="800" y="195" font-size="30" font-weight="700">Publish</text>
+    <text x="800" y="235" font-size="20" fill="#94a3b8">static + accessible</text>
+  </g>
+</svg>
