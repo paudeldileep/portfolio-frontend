@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Award, GraduationCap, ExternalLink } from 'lucide-react';
-import { SectionHeader, Card, CardContent, Badge, cn } from '@portfolio/ui';
+import { Award, GraduationCap } from 'lucide-react';
+import { SectionHeader, Card, CardContent, Badge } from '@portfolio/ui';
 import type { Certification, Education } from '@portfolio/api-client';
 
 interface CertificationsSectionProps {

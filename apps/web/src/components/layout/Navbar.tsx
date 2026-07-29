@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '@portfolio/ui';
-import { Menu, X, Download } from 'lucide-react';
+import { Menu, X, Download, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { cn } from '@portfolio/ui';
 
@@ -15,6 +15,12 @@ const NAV_LINKS = [
   { href: '#certifications', label: 'Certifications' },
   { href: '#contact',        label: 'Contact' },
 ];
+
+const BLOG_URL =
+  process.env.NEXT_PUBLIC_BLOG_URL ??
+  (process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3001/blog'
+    : '/blog');
 
 export default function Navbar() {
   const [open, setOpen] = React.useState(false);
@@ -115,6 +121,23 @@ export default function Navbar() {
               </li>
             );
           })}
+          <li>
+            <a
+              href={BLOG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Blog (opens in a new tab)"
+              className={cn(
+                'relative isolate inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-medium',
+                'text-slate-700 hover:text-blue-600 dark:text-text-muted dark:hover:text-primary',
+                'transition-all duration-fast',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-offset-2'
+              )}
+            >
+              Blog
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          </li>
         </ul>
 
         {/* ── Right actions ────────────────────────── */}
@@ -188,6 +211,24 @@ export default function Navbar() {
                   </a>
                 </li>
               ))}
+              <li>
+                <a
+                  href={BLOG_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleNavClick}
+                  aria-label="Blog (opens in a new tab)"
+                  className={cn(
+                    'flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium',
+                    'text-slate-700 hover:bg-slate-100 hover:text-blue-600 dark:text-text-secondary dark:hover:bg-bg-elevated dark:hover:text-primary',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-inset',
+                    'transition-colors duration-fast'
+                  )}
+                >
+                  Blog
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+              </li>
               <li className="pt-2 pb-1">
                 <a
                   href="#"

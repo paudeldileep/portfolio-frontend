@@ -11,6 +11,9 @@ build
 # Turbo
 .turbo
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # Hosting
 .vercel
 
@@ -40,5 +43,5 @@ pnpm-debug.log*
 .idea
 *.log
 
-#docs
+# Local project documentation (public repository; back up separately)
 docs/

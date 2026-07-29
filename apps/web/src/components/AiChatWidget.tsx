@@ -22,8 +22,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { Bot, Send, X, MessageCircle, RotateCcw } from 'lucide-react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Button, Badge, cn } from '@portfolio/ui';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Button, cn } from '@portfolio/ui';
 import { sendChatMessage } from '@portfolio/api-client';
 import ChatErrorOverlay from './ChatErrorOverlay';
 
@@ -258,7 +258,7 @@ export default function AiChatWidget() {
           <VisuallyHidden>
             <Dialog.Title>AI Portfolio Assistant</Dialog.Title>
             <p id="chat-description">
-              Ask me anything about Dileep Kumar's professional experience, skills, and background.
+              Ask me anything about Dileep Kumar’s professional experience, skills, and background.
             </p>
           </VisuallyHidden>
 

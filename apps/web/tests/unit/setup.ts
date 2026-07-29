@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom';
-import { expect, Assertion, vi } from 'vitest';
+import { expect, vi } from 'vitest';
 import { toHaveNoViolations } from 'jest-axe';
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
 declare module 'vitest' {
-  interface Assertion<T = any> {
+  interface Assertion<T = unknown> {
     toHaveNoViolations(): T;
   }
   interface AsymmetricMatchersContaining {
-    toHaveNoViolations(): any;
+    toHaveNoViolations(): unknown;
   }
 }
 

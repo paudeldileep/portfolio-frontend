@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { SectionHeader, Card, CardContent, Badge } from '@portfolio/ui';
+import { SectionHeader, Card, CardContent } from '@portfolio/ui';
 import type { Profile } from '@portfolio/api-client';
 
 interface AboutSectionProps {
