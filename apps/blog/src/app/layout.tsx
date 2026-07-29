@@ -3,6 +3,13 @@ import Link from 'next/link';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import { ThemeToggle } from '@portfolio/ui';
+import {
+  DEFAULT_SOCIAL_IMAGE_PATH,
+  getSiteUrl,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+} from '@/config/site';
 import './globals.css';
 
 const inter = Inter({
@@ -19,20 +26,43 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500'],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 const portfolioUrl =
   process.env.NEXT_PUBLIC_PORTFOLIO_URL ?? 'http://localhost:3000';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: getSiteUrl(),
   title: {
-    default: 'Engineering Notes | Dileep T',
+    default: SITE_TITLE,
     template: '%s | Dileep T',
   },
-  description:
-    'Practical notes on frontend engineering, accessibility, architecture, and AI-augmented development.',
+  description: SITE_DESCRIPTION,
   alternates: {
     canonical: '/blog',
+    types: {
+      'application/rss+xml': '/blog/rss.xml',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: '/blog',
+    images: [
+      {
+        url: DEFAULT_SOCIAL_IMAGE_PATH,
+        width: 1200,
+        height: 630,
+        alt: 'Engineering Notes by Dileep T',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_SOCIAL_IMAGE_PATH],
   },
   robots: {
     index: true,

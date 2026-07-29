@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { getBlogZoneRewrites } from './src/config/blog-zone';
 
 const nextConfig: NextConfig = {
   // Enable React strict mode for surfacing potential issues early
@@ -19,6 +20,11 @@ const nextConfig: NextConfig = {
         hostname: 'avatars.githubusercontent.com',
       },
     ],
+  },
+
+  // Proxy the independently deployed blog zone behind the portfolio origin.
+  async rewrites() {
+    return getBlogZoneRewrites();
   },
 
   // Security headers
