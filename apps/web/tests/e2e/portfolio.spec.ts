@@ -3,23 +3,41 @@ import AxeBuilder from '@axe-core/playwright';
 
 // ── Helpers ────────────────────────────────────────────────────
 async function waitForPage(page: Page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('main')).toBeVisible();
+  await page.waitForTimeout(750);
 }
 
 // ── Navigation & Layout ────────────────────────────────────────
 test.describe('Navigation', () => {
-  test('renders navbar with all links', async ({ page }) => {
+  test('renders navbar with all links', async ({ page, isMobile }) => {
     await waitForPage(page);
-    const nav = page.getByRole('navigation', { name: 'Main navigation' });
-    await expect(nav).toBeVisible();
+    const desktopNav = page.getByRole('navigation', { name: 'Main navigation' });
+    await expect(desktopNav).toBeVisible();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Open navigation menu' }).click();
+    }
+
+    const linkContainer = isMobile
+      ? page.getByRole('dialog', { name: 'Mobile navigation' })
+      : desktopNav;
 
     for (const label of ['About', 'Experience', 'Skills', 'Certifications', 'Contact']) {
-      await expect(nav.getByRole('link', { name: label })).toBeVisible();
+      await expect(linkContainer.getByRole('link', { name: label })).toBeVisible();
     }
   });
 
-  test('skip-to-main link is focusable and targets main content', async ({ page }) => {
+  test('skip-to-main link is focusable and targets main content', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'Safari requires Full Keyboard Access before Tab focuses links.',
+    );
     await waitForPage(page);
     // Tab to skip link
     await page.keyboard.press('Tab');
@@ -34,16 +52,16 @@ test.describe('Navigation', () => {
   test('theme toggle switches between dark and light', async ({ page }) => {
     await waitForPage(page);
     const html = page.locator('html');
-    // Default is dark
-    await expect(html).toHaveAttribute('data-theme', 'dark');
-
-    const toggle = page.getByRole('button', { name: /switch to light mode/i });
-    await toggle.click();
+    // Both zones intentionally default to light.
     await expect(html).toHaveAttribute('data-theme', 'light');
 
-    const toggleBack = page.getByRole('button', { name: /switch to dark mode/i });
-    await toggleBack.click();
+    const toggle = page.getByRole('button', { name: /switch to dark mode/i });
+    await toggle.click();
     await expect(html).toHaveAttribute('data-theme', 'dark');
+
+    const toggleBack = page.getByRole('button', { name: /switch to light mode/i });
+    await toggleBack.click();
+    await expect(html).toHaveAttribute('data-theme', 'light');
   });
 });
 
@@ -51,9 +69,12 @@ test.describe('Navigation', () => {
 test.describe('Hero Section', () => {
   test('renders headline and CTAs', async ({ page }) => {
     await waitForPage(page);
+    const hero = page.locator('#hero');
     await expect(page.getByRole('heading', { level: 1, name: /Dileep T/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Get in touch/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /View my work/i })).toBeVisible();
+    await expect(hero.getByRole('link', { name: 'About Me' })).toBeVisible();
+    await expect(
+      hero.getByRole('link', { name: 'Download CV (coming soon)' }),
+    ).toBeVisible();
   });
 });
 

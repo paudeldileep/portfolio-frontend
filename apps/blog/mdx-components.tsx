@@ -1,5 +1,5 @@
 import type { MDXComponents } from 'mdx/types';
-import type { ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 function Callout({
   children,
@@ -16,8 +16,22 @@ function Callout({
   );
 }
 
+function ScrollableTable(props: ComponentPropsWithoutRef<'table'>) {
+  return (
+    <div
+      className="blog-table-scroll"
+      role="region"
+      aria-label="Scrollable data table"
+      tabIndex={0}
+    >
+      <table {...props} />
+    </div>
+  );
+}
+
 const components: MDXComponents = {
   Callout,
+  table: ScrollableTable,
 };
 
 export function useMDXComponents(): MDXComponents {
