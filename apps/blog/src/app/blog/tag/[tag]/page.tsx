@@ -3,6 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PostCard } from '@/components/posts/PostCard';
 import {
+  DEFAULT_SOCIAL_IMAGE_PATH,
+  SITE_NAME,
+} from '@/config/site';
+import {
   getPostsByTag,
   getPublishedTagSlugs,
   normalizeSlug,
@@ -22,10 +26,42 @@ export async function generateMetadata({
   params,
 }: TagPageProps): Promise<Metadata> {
   const { tag } = await params;
+  const normalizedTag = normalizeSlug(tag);
+  const posts = getPostsByTag(normalizedTag);
+
+  if (posts.length === 0) {
+    return {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
+  const displayTag =
+    posts[0].tags[posts[0].tagSlugs.indexOf(normalizedTag)] ?? tag;
+  const title = `${displayTag} articles`;
+  const description = `Engineering notes filed under ${displayTag}.`;
+  const canonicalUrl = `/blog/tag/${normalizedTag}`;
+
   return {
-    title: `Posts tagged ${tag}`,
-    description: `Engineering notes filed under ${tag}.`,
-    alternates: { canonical: `/blog/tag/${normalizeSlug(tag)}` },
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_NAME,
+      title,
+      description,
+      url: canonicalUrl,
+      images: [DEFAULT_SOCIAL_IMAGE_PATH],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [DEFAULT_SOCIAL_IMAGE_PATH],
+    },
   };
 }
 

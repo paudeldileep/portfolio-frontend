@@ -6,6 +6,12 @@ import {
   parsePostSource,
   resolveAdjacentPosts,
 } from '../../src/lib/content/posts';
+import {
+  generateRssFeed,
+  generateSitemap,
+  getSitemapEntries,
+} from '../../src/lib/seo/feeds';
+import { getBlogPostingStructuredData } from '../../src/lib/seo/structured-data';
 
 const validPost = `---
 title: "A valid article"
@@ -113,5 +119,56 @@ describe('post content utilities', () => {
       previousPost: { slug: 'oldest' },
       nextPost: { slug: 'newest' },
     });
+  });
+
+  it('generates a draft-free RSS feed with each published post once', () => {
+    const posts = getPublishedPosts();
+    const feed = generateRssFeed(posts);
+
+    expect(feed).toContain('<rss version="2.0"');
+    expect(feed).toContain(
+      '<atom:link href="http://localhost:3000/blog/rss.xml"',
+    );
+    expect(feed.match(/<item>/g)).toHaveLength(posts.length);
+    expect(feed).not.toContain('draft-content-fixture');
+
+    for (const post of posts) {
+      expect(feed.match(new RegExp(`<title>${post.title}</title>`, 'g'))).toHaveLength(
+        1,
+      );
+    }
+  });
+
+  it('generates one sitemap entry per landing, tag, and published post route', () => {
+    const posts = getPublishedPosts();
+    const entries = getSitemapEntries(posts);
+    const sitemap = generateSitemap(posts);
+    const expectedEntryCount =
+      1 + new Set(posts.flatMap((post) => post.tagSlugs)).size + posts.length;
+
+    expect(entries).toHaveLength(expectedEntryCount);
+    expect(new Set(entries.map(({ url }) => url)).size).toBe(
+      expectedEntryCount,
+    );
+    expect(sitemap.match(/<url>/g)).toHaveLength(expectedEntryCount);
+    expect(sitemap).not.toContain('draft-content-fixture');
+  });
+
+  it('builds complete BlogPosting structured data for published articles', () => {
+    const post = getPublishedPosts()[0];
+    const structuredData = getBlogPostingStructuredData(post);
+
+    expect(structuredData).toMatchObject({
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      datePublished: post.publishedAt,
+      mainEntityOfPage: `http://localhost:3000/blog/${post.slug}`,
+      author: {
+        '@type': 'Person',
+        name: post.authorProfile.name,
+      },
+    });
+    expect(structuredData.image).toMatch(/^http:\/\/localhost:3000\//);
   });
 });
