@@ -4,12 +4,15 @@ import { notFound } from 'next/navigation';
 import { ArticleNavigation } from '@/components/posts/ArticleNavigation';
 import { TableOfContents } from '@/components/posts/TableOfContents';
 import { TagList } from '@/components/posts/TagList';
+import { DEFAULT_SOCIAL_IMAGE_PATH } from '@/config/site';
 import {
   getPostBySlug,
   getPostNavigation,
   getPublishedPosts,
   loadPublishedPost,
 } from '@/lib/content/posts';
+import { getPostPublicUrl } from '@/lib/seo/feeds';
+import { getBlogPostingStructuredData } from '@/lib/seo/structured-data';
 
 type PostPageProps = {
   params: Promise<{ slug: string }>;
@@ -28,14 +31,22 @@ export async function generateMetadata({
   const post = getPostBySlug(slug);
 
   if (!post) {
-    return {};
+    return {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
   }
+
+  const canonicalUrl = getPostPublicUrl(post);
+  const socialImage = DEFAULT_SOCIAL_IMAGE_PATH;
 
   return {
     title: post.title,
     description: post.description,
     alternates: {
-      canonical: post.canonicalUrl ?? `/blog/${post.slug}`,
+      canonical: canonicalUrl,
     },
     authors: [{ name: post.authorProfile.name }],
     openGraph: {
@@ -46,7 +57,14 @@ export async function generateMetadata({
       modifiedTime: post.updatedAt,
       authors: [post.authorProfile.name],
       tags: post.tags,
-      images: post.image ? [post.image] : undefined,
+      url: canonicalUrl,
+      images: [socialImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      images: [socialImage],
     },
   };
 }
@@ -60,9 +78,16 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const { previousPost, nextPost } = getPostNavigation(slug);
+  const structuredData = getBlogPostingStructuredData(post);
 
   return (
     <main id="main-content" tabIndex={-1} className="outline-none">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
+        }}
+      />
       <div className="article-layout blog-container section-padding">
         <article className="min-w-0">
           <Link
