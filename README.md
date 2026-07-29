@@ -35,7 +35,7 @@ maintained locally outside the public repository.
 | AI Chat | FastAPI RAG backend (`POST /chat`) |
 | Unit Tests | Vitest + React Testing Library + jest-axe |
 | E2E Tests | Playwright + @axe-core/playwright |
-| CI/CD | Jenkins (Declarative Pipeline) + Docker |
+| CI/CD | GitHub Actions quality gate + Vercel Git deployments |
 | Monorepo | pnpm Workspaces + Turborepo |
 | Accessibility | WCAG 2.1 AA — Radix, focus rings, skip nav, aria-live |
 
@@ -58,7 +58,7 @@ pnpm install
 ### Development
 
 ```bash
-# Start the portfolio app at http://localhost:3000
+# Start portfolio and blog at http://localhost:3000 and http://localhost:3001
 pnpm dev
 
 # Or target a specific app
@@ -72,6 +72,15 @@ Create `apps/web/.env.local`:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+BLOG_ORIGIN=http://localhost:3001
+NEXT_PUBLIC_BLOG_URL=http://localhost:3000/blog
+```
+
+Create `apps/blog/.env.local` only when overriding these local defaults:
+
+```env
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_PORTFOLIO_URL=http://localhost:3000
 ```
 
 ---
@@ -86,6 +95,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 | `pnpm typecheck` | TypeScript `tsc --noEmit` across all packages |
 | `pnpm test:unit` | Run Vitest unit + accessibility tests |
 | `pnpm test:e2e` | Run Playwright E2E automation tests |
+| `pnpm smoke:production` | Verify deployed portfolio/blog routes and assets |
 
 ---
 
@@ -118,31 +128,44 @@ All apps in the monorepo consume these tokens — one edit, instant propagation.
 This monorepo is structured for Next.js **Multi-Zones** MFE expansion:
 
 1. **Blog** (`apps/blog`) — serve at `/blog/*` via `next.config.ts` rewrites
-2. **Admin** (`apps/admin`) — serve at `/admin/*` (SSR + JWT-gated, uses `X-Admin-Token`)
+2. **Admin** (`apps/admin`) — future authenticated owner/author application
 
 Each zone shares `packages/tokens` and `packages/ui` — guaranteeing visual consistency while being independently deployable.
 
 ---
 
-## CI/CD (Jenkins)
+## CI/CD
 
-See [`Jenkinsfile`](./Jenkinsfile) for the full declarative pipeline:
+GitHub Actions is the active CI system. The quality gate in
+`.github/workflows/ci.yml` runs lint, typecheck, unit/accessibility tests,
+dependency audit, production builds, and the cross-zone Playwright suite.
 
-1. Checkout & Install (pnpm cache-aware)
-2. Lint + TypeScript check (parallel)
-3. Unit & Accessibility tests
-4. Turborepo Build
-5. Playwright E2E in Docker
-6. Deploy to staging (on `main` branch)
+Vercel remains the deployment system:
+
+1. Pull requests run CI and receive Vercel preview deployments.
+2. Protect `main` with the `Lint, test, build, and E2E` required status check.
+3. Merging to `main` triggers independent portfolio/blog production projects.
+4. Run the manual `Deployment Smoke Test` workflow after production changes.
+
+[`Jenkinsfile`](./Jenkinsfile) is retained only as an optional parity pipeline;
+it never deploys. See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for environment,
+rollback, and Vercel configuration procedures.
 
 ---
 
 ## Docker
 
 ```bash
-# Build and start the full stack (frontend + FastAPI backend)
+# Build and start portfolio, blog, and the sibling FastAPI backend
 docker compose up -d --build
 
-# Run E2E tests in Docker
-docker compose --profile test up e2e
+# Check container state and health
+docker compose ps
+
+# Stop the stack without deleting images
+docker compose down
 ```
+
+The portfolio is available at `http://localhost:3000`, including the proxied
+`/blog` route. The direct blog zone is available at `http://localhost:3001/blog`
+and the sibling API at `http://localhost:8000`.

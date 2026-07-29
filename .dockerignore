@@ -1,0 +1,17 @@
+.git
+.github
+.next
+.turbo
+.vercel
+apps/*/.next
+apps/*/coverage
+apps/*/playwright-report
+apps/*/test-results
+coverage
+docs
+node_modules
+packages/*/node_modules
+apps/*/node_modules
+*.log
+.env
+.env.*

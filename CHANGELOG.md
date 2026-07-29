@@ -2,7 +2,27 @@
 
 > Root monorepo at `D:\workspace-new\portfolio-frontend`
 > Date started: 2026-07-18
-> Stack: pnpm 9.15.0 · Turborepo 2 · Next.js 15 · TypeScript 5 · Tailwind CSS · Radix UI · Framer Motion · Lenis · Vitest · Playwright · Jenkins · Docker
+> Stack: pnpm 9.15.0 · Turborepo 2 · Next.js 15 · TypeScript 5 · Tailwind CSS · Radix UI · Framer Motion · Lenis · Vitest · Playwright · GitHub Actions · Vercel · Docker
+
+---
+
+## [2026-07-29] BLOG-080 — Delivery Automation Foundation
+
+**Status:** Implementation complete; GitHub/Vercel settings and Docker runtime
+verification pending.
+
+- Added a read-only GitHub Actions quality gate for lint, typecheck, unit and
+  accessibility tests, high-severity audit, production builds, and Playwright.
+- Added a manually triggered production smoke workflow and dependency-free
+  smoke script for portfolio/blog routes, discovery XML, canonicals, assets,
+  and upstream-host leakage.
+- Added independent `web-runner` and `blog-runner` Docker targets plus
+  portfolio/blog/API Compose orchestration.
+- Scoped Next.js standalone output to Docker builds so normal Windows and
+  Vercel builds retain their existing behavior.
+- Retained Jenkins as an optional, non-deploying parity pipeline.
+- Documented branch protection, Vercel unaffected-project skipping,
+  environment ownership, and rollback in `DEPLOYMENT.md`.
 
 ---
 

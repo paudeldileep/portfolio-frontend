@@ -1,60 +1,89 @@
 services:
-  # ── Portfolio Frontend ───────────────────────────────────────
   web:
     build:
       context: .
       dockerfile: Dockerfile
-      target: runner
-    container_name: portfolio-web
+      target: web-runner
+      args:
+        BLOG_ORIGIN: http://blog:3001
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        NEXT_PUBLIC_BLOG_URL: ${NEXT_PUBLIC_BLOG_URL:-http://localhost:3000/blog}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
     ports:
-      - '3000:3000'
+      - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:?NEXT_PUBLIC_API_URL is required}
-      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      BLOG_ORIGIN: http://blog:3001
+      NODE_ENV: production
     depends_on:
-      - api
+      blog:
+        condition: service_healthy
+      api:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
     restart: unless-stopped
     networks:
-      - portfolio-net
+      - portfolio
 
-  # ── AI Backend (FastAPI) ─────────────────────────────────────
+  blog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: blog-runner
+      args:
+        NEXT_PUBLIC_PORTFOLIO_URL: ${NEXT_PUBLIC_PORTFOLIO_URL:-http://localhost:3000}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3001/blog",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   api:
     build:
       context: ../portfolio-ai-backend
       dockerfile: Dockerfile
-    container_name: portfolio-api
     ports:
-      - '8000:8000'
+      - "8000:8000"
     environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - SUPABASE_CONTENT_TABLE=${SUPABASE_CONTENT_TABLE:-portfolio_content}
-      - QDRANT_URL=${QDRANT_URL}
-      - QDRANT_API_KEY=${QDRANT_API_KEY}
-      - QDRANT_COLLECTION=${QDRANT_COLLECTION}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_KEY: ${SUPABASE_KEY:-}
+      SUPABASE_CONTENT_TABLE: ${SUPABASE_CONTENT_TABLE:-portfolio_content}
+      QDRANT_URL: ${QDRANT_URL:-}
+      QDRANT_API_KEY: ${QDRANT_API_KEY:-}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION:-}
     restart: unless-stopped
     networks:
-      - portfolio-net
-
-  # ── Playwright E2E Test Runner ───────────────────────────────
-  e2e:
-    image: mcr.microsoft.com/playwright:v1.49.1-jammy
-    container_name: portfolio-e2e
-    working_dir: /app/apps/web
-    volumes:
-      - .:/app
-    command: pnpm test:e2e
-    environment:
-      - PLAYWRIGHT_BASE_URL=http://web:3000
-      - CI=true
-    depends_on:
-      - web
-    networks:
-      - portfolio-net
-    profiles:
-      - test  # Only runs when: docker compose --profile test up
+      - portfolio
 
 networks:
-  portfolio-net:
+  portfolio:
     driver: bridge
