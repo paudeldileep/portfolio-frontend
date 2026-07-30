@@ -23,7 +23,7 @@ jobs:
   quality-gate:
     name: Lint, test, build, and E2E
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Check out repository
