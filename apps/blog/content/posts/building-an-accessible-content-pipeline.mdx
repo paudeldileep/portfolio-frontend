@@ -3,6 +3,7 @@ title: "Building an accessible content pipeline"
 description: "A small, typed publishing foundation that catches content mistakes before readers encounter them."
 author: "dileep"
 publishedAt: "2026-07-29T12:00:00Z"
+updatedAt: "2026-07-30T12:00:00Z"
 tags:
   - "Accessibility"
   - "Architecture"
@@ -11,56 +12,184 @@ draft: false
 image: "/blog-static/images/posts/content-pipeline.svg"
 ---
 
-Good publishing systems make the correct path the easy path. For this blog,
-that starts with a deliberately small pipeline: validated metadata, static
-generation, and accessible HTML.
+The easiest accessibility issue to fix is the one that never reaches a reader.
+That idea shaped the first version of this blog: make common content mistakes
+fail during development, generate stable HTML ahead of time, and keep the
+authoring workflow small enough to understand.
 
-## Start with a contract
+The result is not a content management system. It is a typed publishing
+pipeline built with local MDX, Next.js, and a narrow content API. This article
+walks through the decisions behind it, including what the pipeline validates,
+what it deliberately leaves to editorial review, and how it can evolve later.
 
-A content contract turns an informal convention into something the build can
-verify:
+## Define the boundary first
+
+A route component should not need to know where an article is stored. If every
+page reads files and parses frontmatter directly, moving to an API later means
+rewriting the rendering layer as well as the storage layer.
+
+Instead, the routes ask a small content module for what they need:
+
+```ts
+const posts = await getPublishedPosts();
+const post = await getPostBySlug(slug);
+const taggedPosts = await getPostsByTag(tag);
+```
+
+Today, that module reads repository-owned MDX. A future version can fetch from
+an authenticated publishing API while preserving the same route and component
+contracts. This is a useful form of abstraction: it isolates a likely point of
+change without inventing a generic framework.
+
+## Turn conventions into a contract
+
+Frontmatter is easy to write and just as easy to mistype. A content contract
+turns those informal conventions into values the build can verify:
 
 ```ts
 type PostMetadata = {
   title: string;
+  description: string;
   author: string;
   publishedAt: string;
+  updatedAt?: string;
   tags: string[];
+  image?: string;
+  featured?: boolean;
+  draft?: boolean;
+  canonicalUrl?: string;
 };
 ```
 
-The implementation validates that contract before a page is generated. A
-misspelled author or malformed date becomes a useful build error instead of a
-broken production page.
+The implementation validates required text, ISO dates, known author IDs,
+normalized tags, canonical URLs, and draft state before a page is generated.
+A misspelled author or malformed date becomes a useful error that names the
+source file and invalid field instead of a broken production page.
+
+Validation also protects the public surfaces around an article. Only published
+posts are allowed into:
+
+- the landing page and tag archives;
+- static route generation;
+- the RSS feed;
+- the sitemap.
 
 <Callout title="Keep the first release small">
-  Local MDX is enough for the initial blog. A typed content module gives us a
-  clean place to switch to an API later, without building the admin system now.
+  Local MDX is enough for the initial release. The typed content boundary gives
+  us a clean place to switch sources later without building authentication, an
+  admin application, and a database before readers have a useful blog.
 </Callout>
 
-## Preserve semantic structure
+## Compile content into stable pages
+
+[Next.js supports local MDX](https://nextjs.org/docs/app/guides/mdx) and can
+render it through the App Router. In this project, published article and tag
+paths are discovered during the production build. The MDX is then compiled
+with GitHub Flavored Markdown, heading anchors, and syntax highlighting.
+
+Static generation gives this kind of content a strong default:
+
+1. Readers receive useful HTML without waiting for a content API.
+2. A backend outage cannot remove already-published articles.
+3. Invalid content can stop the build before deployment.
+4. Search and sharing metadata can be generated from the same validated
+   record.
+
+Static output is not automatically correct or accessible. It simply gives the
+pipeline a predictable artifact that we can inspect and test.
+
+## Preserve semantic structure in MDX
 
 Articles should remain understandable before visual styling is applied:
 
 1. Use one descriptive page heading.
 2. Keep heading levels in a logical order.
-3. Give links meaningful text, such as the [Web Content Accessibility
-   Guidelines](https://www.w3.org/WAI/standards-guidelines/wcag/).
+3. Give links meaningful text instead of labels such as “click here.”
 4. Provide alternatives for informative images.
+5. Use lists, tables, quotations, and code blocks for their intended meaning.
+
+The [W3C heading guidance](https://www.w3.org/WAI/tutorials/page-structure/headings/)
+explains why this hierarchy matters: headings communicate a page's organization
+and support in-page navigation. The article renderer builds a table of contents
+from that same heading structure, so clear semantics help both assistive
+technology and sighted readers scanning a long page.
 
 ![A diagram showing MDX content passing through validation and static generation before reaching the reader.](/blog-static/images/posts/content-pipeline.svg)
 
 > Accessibility is most durable when it is part of the publishing path, not a
 > review step added at the end.
 
-## Make decisions visible
+MDX can also introduce custom React components. The first release keeps that
+surface deliberately narrow. For example, the callout above renders as an
+`aside` with an accessible label, and wide tables sit inside a keyboard
+focusable scroll region instead of forcing the entire page to overflow on a
+small screen.
 
-| Concern | First release | Later |
-| --- | --- | --- |
-| Authoring | Repository-owned MDX | Authenticated admin UI |
-| Content source | Local files | Database API |
-| Rendering | Static generation | Static generation with revalidation |
-| Permissions | Git access | Owner and author roles |
+## Test the reader's path
 
-This boundary keeps the present implementation understandable while leaving a
-feasible route to multi-author publishing.
+Unit tests are useful for content rules: malformed dates, unknown authors,
+duplicate tags, draft filtering, and generated metadata. They are fast and
+pinpoint which contract failed.
+
+Browser tests cover a different layer. The project checks the published route
+across Chromium, Firefox, WebKit, and mobile profiles. Those checks exercise:
+
+- landing, article, tag, RSS, sitemap, and not-found routes;
+- cross-zone links between the portfolio and blog;
+- keyboard navigation and theme persistence;
+- horizontal overflow at mobile widths;
+- serious and critical automated accessibility violations.
+
+Neither layer proves that an article is well written. Editorial review still
+has to confirm the title, description, examples, claims, link destinations,
+image alternatives, and reading flow. Automation should remove mechanical
+mistakes so that review time can focus on meaning.
+
+## Keep deployment independent
+
+The portfolio and blog are separate Next.js applications but appear under one
+public domain. The portfolio owns the main site and proxies `/blog/*` to the
+blog deployment. Blog assets use a distinct `/blog-static` prefix so the two
+applications do not compete for the same Next.js asset paths.
+
+This multi-zone boundary allows either application to build and deploy
+independently. It also creates responsibilities that a single application does
+not have: cross-zone navigation uses normal document links, canonical URLs
+must point to the public domain rather than the upstream deployment, and smoke
+tests must verify that the proxy does not leak the upstream hostname.
+
+## Make trade-offs visible
+
+| Concern        | First release                     | Later                               |
+| -------------- | --------------------------------- | ----------------------------------- |
+| Authoring      | Repository-owned MDX              | Authenticated admin UI              |
+| Content source | Local files                       | Database API                        |
+| Rendering      | Static generation                 | Static generation with revalidation |
+| Permissions    | Git access                        | Owner and author roles              |
+| Review         | Pull request and automated checks | Draft and approval workflow         |
+
+Local MDX means publishing requires Git knowledge, and private drafts must not
+be committed to a public repository. Those are acceptable constraints for one
+or two technical authors at the start. They would become poor constraints for
+a larger writing team, frequent non-technical editing, scheduled publishing,
+or content that needs fine-grained access control.
+
+That is the point at which an admin UI and database earn their complexity. The
+content API boundary already identifies where that migration belongs.
+
+## What I would repeat
+
+The most valuable part of this implementation is not MDX or any individual
+library. It is the order of decisions:
+
+1. Define the public content contract.
+2. Hide storage behind a small typed API.
+3. Generate pages and discovery files from the same validated source.
+4. Build accessibility into the rendering components.
+5. Test contracts and real reader journeys at different layers.
+6. Add operational checks for the public deployment.
+
+That sequence keeps the first version modest while making its guarantees
+explicit. A publishing system does not need to be large to be durable; it
+needs clear boundaries, useful failures, and a path that helps authors do the
+right thing by default.
