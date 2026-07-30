@@ -9,7 +9,7 @@ export const AUTHORS = {
   dileep: {
     id: 'dileep',
     name: 'Dileep T',
-    role: 'Frontend architect and engineer',
+    role: 'Frontend-focused full-stack engineer',
     bio: 'Writing about accessible interfaces, durable frontend systems, and practical AI-assisted engineering.',
   },
 } as const satisfies Record<string, AuthorProfile>;

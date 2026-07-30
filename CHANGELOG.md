@@ -6,6 +6,22 @@
 
 ---
 
+## [2026-07-30] BLOG-090 — First Article Editorial Release
+
+**Status:** In progress
+
+- Expanded the first public article, “Building an accessible content
+  pipeline,” from a representative fixture into a production-ready technical
+  walkthrough.
+- Added the content-boundary rationale, validation rules, static-generation
+  model, semantic MDX guidance, layered testing strategy, multi-zone deployment
+  trade-offs, and a practical migration path.
+- Added an explicit update date and links to primary Next.js and W3C guidance.
+- Final quality-gate and production-surface verification remain before the
+  release is marked complete.
+
+---
+
 ## [2026-07-29] BLOG-080 — Delivery Automation Foundation
 
 **Status:** Implementation complete; GitHub/Vercel settings and Docker runtime
