@@ -5,6 +5,7 @@
       "dependsOn": ["^build"],
       "env": [
         "BLOG_ORIGIN",
+        "NEXT_OUTPUT_MODE",
         "NEXT_PUBLIC_API_URL",
         "NEXT_PUBLIC_BLOG_URL",
         "NEXT_PUBLIC_PORTFOLIO_URL",

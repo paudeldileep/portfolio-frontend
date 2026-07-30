@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 import { getBlogZoneRewrites } from './src/config/blog-zone';
 
 const nextConfig: NextConfig = {
+  output:
+    process.env.NEXT_OUTPUT_MODE === 'standalone' ? 'standalone' : undefined,
+
   // Enable React strict mode for surfacing potential issues early
   reactStrictMode: true,
 

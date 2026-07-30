@@ -1,65 +1,69 @@
 # syntax=docker/dockerfile:1
-# ──────────────────────────────────────────────────────────────
-# Multi-stage Dockerfile for @portfolio/web (Next.js 15)
-# Stage 1 — deps:     Install all workspace dependencies
-# Stage 2 — builder:  Build the Next.js application
-# Stage 3 — runner:   Minimal production image (~150MB)
-# ──────────────────────────────────────────────────────────────
 
-# ── Stage 1: Install dependencies ─────────────────────────────
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS base
 WORKDIR /app
-
-# Install pnpm
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
-# Copy workspace manifests only (layer caching for deps)
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
-COPY packages/tokens/package.json    ./packages/tokens/package.json
-COPY packages/ui/package.json        ./packages/ui/package.json
+FROM base AS dependencies
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/web/package.json ./apps/web/package.json
+COPY apps/blog/package.json ./apps/blog/package.json
 COPY packages/api-client/package.json ./packages/api-client/package.json
-COPY apps/web/package.json           ./apps/web/package.json
-
+COPY packages/tokens/package.json ./packages/tokens/package.json
+COPY packages/ui/package.json ./packages/ui/package.json
 RUN pnpm install --frozen-lockfile
 
-# ── Stage 2: Build ─────────────────────────────────────────────
-FROM node:20-alpine AS builder
-WORKDIR /app
-
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-# Copy node_modules from deps stage
-COPY --from=deps /app/node_modules      ./node_modules
-COPY --from=deps /app/packages/tokens/node_modules ./packages/tokens/node_modules
-COPY --from=deps /app/packages/ui/node_modules     ./packages/ui/node_modules
-COPY --from=deps /app/apps/web/node_modules        ./apps/web/node_modules
-
-# Copy source
+FROM base AS source
+COPY --from=dependencies /app/ /app/
 COPY . .
 
-# Build the web app
-ENV NEXT_TELEMETRY_DISABLED=1
+FROM source AS web-builder
+ARG BLOG_ORIGIN=http://blog:3001
+ARG NEXT_PUBLIC_API_URL=http://localhost:8000
+ARG NEXT_PUBLIC_BLOG_URL=http://localhost:3000/blog
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ENV BLOG_ORIGIN=$BLOG_ORIGIN
+ENV NEXT_OUTPUT_MODE=standalone
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_BLOG_URL=$NEXT_PUBLIC_BLOG_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 RUN pnpm --filter @portfolio/web build
 
-# ── Stage 3: Production runner ─────────────────────────────────
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS web-runner
 WORKDIR /app
-
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser  --system --uid 1001 nextjs
-
-# Only copy the compiled Next.js standalone output
-COPY --from=builder /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public       ./apps/web/public
-
-USER nextjs
-
-EXPOSE 3000
 ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-
+ENV HOSTNAME=0.0.0.0
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
+COPY --from=web-builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=web-builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=web-builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+USER nextjs
+EXPOSE 3000
 CMD ["node", "apps/web/server.js"]
+
+FROM source AS blog-builder
+ARG NEXT_PUBLIC_PORTFOLIO_URL=http://localhost:3000
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ENV NEXT_PUBLIC_PORTFOLIO_URL=$NEXT_PUBLIC_PORTFOLIO_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_OUTPUT_MODE=standalone
+RUN pnpm --filter @portfolio/blog build
+
+FROM node:24-alpine AS blog-runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3001
+ENV HOSTNAME=0.0.0.0
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
+COPY --from=blog-builder --chown=nextjs:nodejs /app/apps/blog/.next/standalone ./
+COPY --from=blog-builder --chown=nextjs:nodejs /app/apps/blog/.next/static ./apps/blog/.next/static
+COPY --from=blog-builder --chown=nextjs:nodejs /app/apps/blog/public ./apps/blog/public
+USER nextjs
+EXPOSE 3001
+CMD ["node", "apps/blog/server.js"]
