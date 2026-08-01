@@ -1,12 +1,12 @@
-import { getPublishedPosts } from '@/lib/content/posts';
+import { getPublishedPosts } from '@/lib/content/published-posts';
 import { generateSitemap } from '@/lib/seo/feeds';
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 
-export function GET() {
-  return new Response(generateSitemap(getPublishedPosts()), {
+export async function GET() {
+  return new Response(generateSitemap(await getPublishedPosts()), {
     headers: {
-      'Cache-Control': 'public, max-age=0, s-maxage=3600',
+      'Cache-Control': 'no-store',
       'Content-Type': 'application/xml; charset=utf-8',
     },
   });

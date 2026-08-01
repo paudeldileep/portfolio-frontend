@@ -2,15 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArticleNavigation } from '@/components/posts/ArticleNavigation';
+import { MarkdownArticle } from '@/components/posts/MarkdownArticle';
 import { TableOfContents } from '@/components/posts/TableOfContents';
 import { TagList } from '@/components/posts/TagList';
 import { DEFAULT_SOCIAL_IMAGE_PATH } from '@/config/site';
 import {
-  getPostBySlug,
+  getPublishedPostBySlug,
   getPostNavigation,
-  getPublishedPosts,
-  loadPublishedPost,
-} from '@/lib/content/posts';
+} from '@/lib/content/published-posts';
 import { getPostPublicUrl } from '@/lib/seo/feeds';
 import { getBlogPostingStructuredData } from '@/lib/seo/structured-data';
 
@@ -18,17 +17,13 @@ type PostPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return getPublishedPosts().map(({ slug }) => ({ slug }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPublishedPostBySlug(slug);
 
   if (!post) {
     return {
@@ -71,13 +66,13 @@ export async function generateMetadata({
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = await loadPublishedPost(slug);
+  const post = await getPublishedPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  const { previousPost, nextPost } = getPostNavigation(slug);
+  const { previousPost, nextPost } = await getPostNavigation(slug);
   const structuredData = getBlogPostingStructuredData(post);
 
   return (
@@ -121,7 +116,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </header>
 
           <div className="blog-prose mt-10">
-            <post.Content />
+            <MarkdownArticle markdown={post.bodyMarkdown ?? ''} />
           </div>
 
           <aside className="mt-12 rounded-2xl border border-border bg-bg-surface p-6 sm:p-7">

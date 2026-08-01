@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import type { PostSummary } from '@/lib/content/posts';
+import type { PublishedPost } from '@/lib/content/published-posts';
 
 export function ArticleNavigation({
   previousPost,
   nextPost,
 }: {
-  previousPost?: PostSummary;
-  nextPost?: PostSummary;
+  previousPost?: PublishedPost;
+  nextPost?: PublishedPost;
 }) {
   if (!previousPost && !nextPost) {
     return null;

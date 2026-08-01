@@ -6,6 +6,7 @@ import {
   parsePostSource,
   resolveAdjacentPosts,
 } from '../../src/lib/content/posts';
+import { getAuthor } from '../../src/config/authors';
 import {
   generateRssFeed,
   generateSitemap,
@@ -29,6 +30,13 @@ Enough words to calculate a reading time.
 `;
 
 describe('post content utilities', () => {
+  it('exposes the configured public profile for Shraddha', () => {
+    expect(getAuthor('shraddha')).toMatchObject({
+      name: 'Shraddha',
+      role: 'Full-stack engineer',
+    });
+  });
+
   it('normalizes filenames and tags into URL-safe slugs', () => {
     expect(normalizeSlug('  React & Accessibility  ')).toBe(
       'react-accessibility',

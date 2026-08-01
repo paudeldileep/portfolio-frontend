@@ -2,10 +2,10 @@ import {
   absoluteUrl,
   DEFAULT_SOCIAL_IMAGE_PATH,
 } from '@/config/site';
-import type { PostSummary } from '@/lib/content/posts';
+import type { PublishedPost } from '@/lib/content/published-posts';
 import { getPostPublicUrl } from '@/lib/seo/feeds';
 
-export function getBlogPostingStructuredData(post: PostSummary) {
+export function getBlogPostingStructuredData(post: PublishedPost) {
   const publicUrl = getPostPublicUrl(post);
 
   return {

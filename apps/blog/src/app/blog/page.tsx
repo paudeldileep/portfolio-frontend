@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { Badge } from '@portfolio/ui';
 import { PostCard } from '@/components/posts/PostCard';
 import { TagList } from '@/components/posts/TagList';
-import { getPublishedPosts } from '@/lib/content/posts';
+import { getPublishedPosts } from '@/lib/content/published-posts';
 
-export default function BlogLandingPage() {
-  const posts = getPublishedPosts();
+export const dynamic = 'force-dynamic';
+
+export default async function BlogLandingPage() {
+  const posts = await getPublishedPosts();
   const featuredPost = posts.find((post) => post.featured) ?? posts[0];
   const recentPosts = posts.filter((post) => post.slug !== featuredPost?.slug);
 
