@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { AdminIdentityCard } from '@/components/AdminIdentityCard';
 import { SignInForm } from '@/app/login/SignInForm';
+import { MarkdownPreview } from '@/components/MarkdownPreview';
 
 describe('admin foundation components', () => {
   it('renders the verified owner identity and permissions', () => {
@@ -35,5 +36,12 @@ describe('admin foundation components', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Enter your invited email address.'
     );
+  });
+
+  it('renders Markdown while ignoring raw HTML', () => {
+    render(<MarkdownPreview markdown={'## Safe heading\n\n<script>alert(1)</script>'} />);
+
+    expect(screen.getByRole('heading', { name: 'Safe heading' })).toBeInTheDocument();
+    expect(document.querySelector('script')).not.toBeInTheDocument();
   });
 });
