@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { Card, CardContent } from '@portfolio/ui';
-import type { PostSummary } from '@/lib/content/posts';
+import type { PublishedPost } from '@/lib/content/published-posts';
 import { TagList } from './TagList';
 
 const dateFormatter = new Intl.DateTimeFormat('en', {
   dateStyle: 'medium',
 });
 
-export function PostCard({ post }: { post: PostSummary }) {
+export function PostCard({ post }: { post: PublishedPost }) {
   return (
     <Card className="group h-full transition-transform duration-200 hover:-translate-y-1">
       <CardContent className="flex h-full flex-col p-6 sm:p-7">

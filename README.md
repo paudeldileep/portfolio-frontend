@@ -81,6 +81,7 @@ Create `apps/blog/.env.local` only when overriding these local defaults:
 ```env
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_PORTFOLIO_URL=http://localhost:3000
+BLOG_API_URL=http://localhost:8000
 ```
 
 ---

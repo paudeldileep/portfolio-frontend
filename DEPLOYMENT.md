@@ -73,6 +73,7 @@ into browser assets and are never secrets.
 | --------------------------- | ------------------------------------------- |
 | `NEXT_PUBLIC_PORTFOLIO_URL` | Public portfolio origin                     |
 | `NEXT_PUBLIC_SITE_URL`      | Public portfolio origin used for canonicals |
+| `BLOG_API_URL`              | Server-side FastAPI origin for published posts |
 
 Never put Supabase service keys, Qdrant API keys, admin tokens, or other backend
 credentials in either frontend project.

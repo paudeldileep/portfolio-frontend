@@ -9,6 +9,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 const nextConfig: NextConfig = {
   output:
     process.env.NEXT_OUTPUT_MODE === 'standalone' ? 'standalone' : undefined,
+  distDir: process.env.NEXT_DIST_DIR ?? '.next',
   reactStrictMode: true,
   devIndicators: false,
   assetPrefix: '/blog-static',

@@ -8,26 +8,21 @@ import {
 } from '@/config/site';
 import {
   getPostsByTag,
-  getPublishedTagSlugs,
-  normalizeSlug,
-} from '@/lib/content/posts';
+} from '@/lib/content/published-posts';
+import { normalizeSlug } from '@/lib/content/posts';
 
 type TagPageProps = {
   params: Promise<{ tag: string }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return getPublishedTagSlugs().map((tag) => ({ tag }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
 }: TagPageProps): Promise<Metadata> {
   const { tag } = await params;
   const normalizedTag = normalizeSlug(tag);
-  const posts = getPostsByTag(normalizedTag);
+  const posts = await getPostsByTag(normalizedTag);
 
   if (posts.length === 0) {
     return {
@@ -67,7 +62,7 @@ export async function generateMetadata({
 
 export default async function TagPage({ params }: TagPageProps) {
   const { tag } = await params;
-  const posts = getPostsByTag(tag);
+  const posts = await getPostsByTag(tag);
 
   if (posts.length === 0) {
     notFound();

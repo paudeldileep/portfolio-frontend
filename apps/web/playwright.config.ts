@@ -50,6 +50,8 @@ export default defineConfig({
           reuseExistingServer: !process.env.CI,
           timeout: 180_000,
           env: {
+            BLOG_API_URL: localApiOrigin,
+            NEXT_DIST_DIR: '.next-e2e',
             NEXT_PUBLIC_PORTFOLIO_URL: localBaseUrl,
             NEXT_PUBLIC_SITE_URL: localBaseUrl,
           },

@@ -3,7 +3,7 @@ import {
   SITE_DESCRIPTION,
   SITE_NAME,
 } from '@/config/site';
-import type { PostSummary } from '@/lib/content/posts';
+import type { PublishedPost } from '@/lib/content/published-posts';
 
 function escapeXml(value: string): string {
   return value
@@ -14,11 +14,11 @@ function escapeXml(value: string): string {
     .replace(/'/g, '&apos;');
 }
 
-export function getPostPublicUrl(post: PostSummary): string {
-  return post.canonicalUrl ?? absoluteUrl(`/blog/${post.slug}`);
+export function getPostPublicUrl(post: PublishedPost): string {
+  return absoluteUrl(`/blog/${post.slug}`);
 }
 
-export function generateRssFeed(posts: PostSummary[]): string {
+export function generateRssFeed(posts: PublishedPost[]): string {
   const blogUrl = absoluteUrl('/blog');
   const feedUrl = absoluteUrl('/blog/rss.xml');
   const lastBuildDate =
@@ -74,7 +74,7 @@ type SitemapEntry = {
   lastModified?: string;
 };
 
-export function getSitemapEntries(posts: PostSummary[]): SitemapEntry[] {
+export function getSitemapEntries(posts: PublishedPost[]): SitemapEntry[] {
   const tagSlugs = Array.from(
     new Set(posts.flatMap((post) => post.tagSlugs)),
   ).sort();
@@ -91,7 +91,7 @@ export function getSitemapEntries(posts: PostSummary[]): SitemapEntry[] {
   ];
 }
 
-export function generateSitemap(posts: PostSummary[]): string {
+export function generateSitemap(posts: PublishedPost[]): string {
   const entries = getSitemapEntries(posts)
     .map(
       ({ url, lastModified }) =>

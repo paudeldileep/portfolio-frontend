@@ -60,6 +60,33 @@ const portfolioContent = {
   ],
 };
 
+const publishedBlogPost = {
+  slug: "building-an-accessible-content-pipeline",
+  title: "Building an accessible content pipeline",
+  description:
+    "A small, typed publishing foundation that catches content mistakes before readers encounter them.",
+  tags: ["Accessibility", "Architecture"],
+  featured: true,
+  image_path: null,
+  published_at: "2026-07-30T12:00:00+00:00",
+  author_name: "Dileep T",
+};
+
+const publishedBlogPostDetail = {
+  ...publishedBlogPost,
+  body_markdown: `## Start with constraints
+
+Accessible publishing begins with clear structure, validated metadata, and predictable rendering.
+
+### Keep the source of truth small
+
+Use one published-content boundary so drafts never reach public readers.
+
+## Validate before publishing
+
+Automated checks keep the public reading experience reliable.`,
+};
+
 function sendJson(response, status, body) {
   response.writeHead(status, {
     "access-control-allow-headers": "content-type",
@@ -89,6 +116,24 @@ const server = createServer((request, response) => {
 
   if (request.method === "GET" && request.url === "/content") {
     sendJson(response, 200, portfolioContent);
+    return;
+  }
+
+  if (request.method === "GET" && request.url === "/v1/posts") {
+    sendJson(response, 200, [publishedBlogPost]);
+    return;
+  }
+
+  if (
+    request.method === "GET" &&
+    request.url === "/v1/posts/building-an-accessible-content-pipeline"
+  ) {
+    sendJson(response, 200, publishedBlogPostDetail);
+    return;
+  }
+
+  if (request.method === "GET" && request.url === "/v1/posts/tags/accessibility") {
+    sendJson(response, 200, [publishedBlogPost]);
     return;
   }
 
