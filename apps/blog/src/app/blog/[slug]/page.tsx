@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArticleNavigation } from '@/components/posts/ArticleNavigation';
+import { ArticleEngagement } from '@/components/posts/ArticleEngagement';
 import { MarkdownArticle } from '@/components/posts/MarkdownArticle';
 import { TableOfContents } from '@/components/posts/TableOfContents';
 import { TagList } from '@/components/posts/TagList';
@@ -118,6 +119,8 @@ export default async function PostPage({ params }: PostPageProps) {
           <div className="blog-prose mt-10">
             <MarkdownArticle markdown={post.bodyMarkdown ?? ''} />
           </div>
+
+          <ArticleEngagement slug={post.slug} title={post.title} />
 
           <aside className="mt-12 rounded-2xl border border-border bg-bg-surface p-6 sm:p-7">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-primary">

@@ -87,6 +87,8 @@ Use one published-content boundary so drafts never reach public readers.
 Automated checks keep the public reading experience reliable.`,
 };
 
+let blogLikeCount = 0;
+
 function sendJson(response, status, body) {
   response.writeHead(status, {
     "access-control-allow-headers": "content-type",
@@ -129,6 +131,24 @@ const server = createServer((request, response) => {
     request.url === "/v1/posts/building-an-accessible-content-pipeline"
   ) {
     sendJson(response, 200, publishedBlogPostDetail);
+    return;
+  }
+
+  if (
+    request.method === "GET" &&
+    request.url === "/v1/posts/building-an-accessible-content-pipeline/engagement"
+  ) {
+    sendJson(response, 200, { like_count: blogLikeCount });
+    return;
+  }
+
+  if (
+    request.method === "POST" &&
+    request.url === "/v1/posts/building-an-accessible-content-pipeline/likes"
+  ) {
+    request.resume();
+    blogLikeCount = 1;
+    sendJson(response, 200, { like_count: blogLikeCount, liked: true });
     return;
   }
 
