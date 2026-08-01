@@ -1,5 +1,6 @@
 import { cn } from '@portfolio/ui';
 import { Github, Linkedin, Mail } from 'lucide-react';
+import Link from 'next/link';
 import { SOCIAL_LINK_CONFIG, PERSONAL_INFO, TECH_STACK } from '@/lib/constants';
 
 export default function Footer() {
@@ -17,7 +18,14 @@ export default function Footer() {
           <span className="font-medium text-text-secondary">{PERSONAL_INFO.name}</span>. {TECH_STACK.buildMessage}.
         </p>
 
-        <nav aria-label="Footer social links">
+        <div className="flex items-center gap-5">
+          <Link
+            href="/privacy"
+            className="rounded-sm text-sm text-text-muted transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-offset-2"
+          >
+            Privacy
+          </Link>
+          <nav aria-label="Footer social links">
           <ul className="flex items-center gap-4 list-none" role="list">
             {SOCIAL_LINK_CONFIG.map(({ href, id, ariaLabel: ariaLabelProp }) => {
               const Icon = { email: Mail, github: Github, linkedin: Linkedin }[id];
@@ -41,7 +49,8 @@ export default function Footer() {
               );
             })}
           </ul>
-        </nav>
+          </nav>
+        </div>
       </div>
     </footer>
   );

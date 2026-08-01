@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
+import { Analytics } from '@vercel/analytics/next';
 import { ThemeToggle } from '@portfolio/ui';
 import {
   DEFAULT_SOCIAL_IMAGE_PATH,
@@ -28,6 +29,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 const portfolioUrl =
   process.env.NEXT_PUBLIC_PORTFOLIO_URL ?? 'http://localhost:3000';
+const privacyUrl = new URL('/privacy', portfolioUrl).toString();
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
@@ -159,11 +161,15 @@ export default function RootLayout({
                   <Link href="/blog" className="rounded-sm hover:text-primary">
                     Articles
                   </Link>
+                  <a href={privacyUrl} className="rounded-sm hover:text-primary">
+                    Privacy
+                  </a>
                   <p>&copy; {new Date().getFullYear()} Dileep T.</p>
                 </div>
               </div>
             </footer>
           </div>
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
