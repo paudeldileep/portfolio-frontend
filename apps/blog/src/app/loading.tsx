@@ -1,7 +1,8 @@
 export default function Loading() {
   return (
-    <main
+    <div
       className="blog-container flex min-h-[60dvh] items-center justify-center py-16"
+      role="status"
       aria-busy="true"
       aria-live="polite"
     >
@@ -14,6 +15,6 @@ export default function Loading() {
           Loading engineering notes…
         </p>
       </div>
-    </main>
+    </div>
   );
 }

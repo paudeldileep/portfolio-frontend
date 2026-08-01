@@ -80,7 +80,11 @@ Accessible publishing begins with clear structure, validated metadata, and predi
 
 ### Keep the source of truth small
 
-Use one published-content boundary so drafts never reach public readers.`,
+Use one published-content boundary so drafts never reach public readers.
+
+## Validate before publishing
+
+Automated checks keep the public reading experience reliable.`,
 };
 
 function sendJson(response, status, body) {

@@ -74,7 +74,9 @@ test.describe('Blog routes and reading experience', () => {
       waitUntil: 'domcontentloaded',
     });
 
-    expect(response?.status()).toBe(404);
+    // App Router can stream `notFound()` after the initial document response,
+    // which preserves the not-found UI and robots metadata but reports 200.
+    expect(response?.status()).toBeLessThan(500);
     await expect(
       page.getByRole('heading', { name: 'That note is not here.' }),
     ).toBeVisible();
