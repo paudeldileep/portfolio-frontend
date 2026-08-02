@@ -165,6 +165,16 @@ test.describe('Blog routes and reading experience', () => {
       );
     }
   });
+
+  test('shows public likes and supports an anonymous like', async ({ page }) => {
+    await gotoReady(page, ARTICLE_PATH);
+
+    const likeButton = page.getByRole('button', { name: /^Like/ });
+    await expect(likeButton).toBeVisible();
+    await likeButton.click();
+    await expect(page.getByRole('button', { name: /^Liked/ })).toBeDisabled();
+    await expect(page.getByText('Thanks for the like.')).toBeAttached();
+  });
 });
 
 test.describe('Blog accessibility automation', () => {
