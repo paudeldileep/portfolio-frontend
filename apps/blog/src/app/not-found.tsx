@@ -13,7 +13,7 @@ export default function NotFoundPage() {
           It may have moved, remained a draft, or never existed.
         </p>
         <Link
-          href="/blog"
+          href="/"
           className="mt-7 inline-flex rounded-md bg-primary px-5 py-3 text-sm font-semibold text-text-inverted transition-colors hover:bg-primary-hover"
         >
           Return to the blog

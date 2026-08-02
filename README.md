@@ -72,14 +72,13 @@ Create `apps/web/.env.local`:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-BLOG_ORIGIN=http://localhost:3001
-NEXT_PUBLIC_BLOG_URL=http://localhost:3000/blog
+NEXT_PUBLIC_BLOG_URL=http://localhost:3001
 ```
 
 Create `apps/blog/.env.local` only when overriding these local defaults:
 
 ```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3001
 NEXT_PUBLIC_PORTFOLIO_URL=http://localhost:3000
 BLOG_API_URL=http://localhost:8000
 ```
@@ -128,7 +127,7 @@ All apps in the monorepo consume these tokens — one edit, instant propagation.
 
 This monorepo is structured for Next.js **Multi-Zones** MFE expansion:
 
-1. **Blog** (`apps/blog`) — serve at `/blog/*` via `next.config.ts` rewrites
+1. **Blog** (`apps/blog`) — independently deployed at `blog.dileept.com`
 2. **Admin** (`apps/admin`) — future authenticated owner/author application
 
 Each zone shares `packages/tokens` and `packages/ui` — guaranteeing visual consistency while being independently deployable.
@@ -168,5 +167,5 @@ docker compose down
 ```
 
 The portfolio is available at `http://localhost:3000`, including the proxied
-`/blog` route. The direct blog zone is available at `http://localhost:3001/blog`
+direct blog domain. The local blog app is available at `http://localhost:3001`
 and the sibling API at `http://localhost:8000`.

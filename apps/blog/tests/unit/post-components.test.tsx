@@ -23,7 +23,7 @@ describe('PostCard', () => {
 
     expect(
       screen.getByRole('link', { name: post.title }),
-    ).toHaveAttribute('href', `/blog/${post.slug}`);
+    ).toHaveAttribute('href', `/${post.slug}`);
     expect(
       screen.getByRole('list', { name: 'Article topics' }),
     ).toBeInTheDocument();
@@ -31,7 +31,7 @@ describe('PostCard', () => {
     expect(screen.getByText(post.readingTime)).toBeInTheDocument();
     expect(screen.getByText(post.tags[0]).closest('a')).toHaveAttribute(
       'href',
-      `/blog/tag/${post.tagSlugs[0]}`,
+      `/tag/${post.tagSlugs[0]}`,
     );
     expect(
       screen.getByText(post.readingTime).previousElementSibling,
@@ -76,10 +76,10 @@ describe('ArticleNavigation', () => {
     expect(navigation).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /Previous article Older article/i }),
-    ).toHaveAttribute('href', '/blog/older-article');
+    ).toHaveAttribute('href', '/older-article');
     expect(
       screen.getByRole('link', { name: /Next article Newer article/i }),
-    ).toHaveAttribute('href', '/blog/newer-article');
+    ).toHaveAttribute('href', '/newer-article');
   });
 
   it('has no automatically detectable accessibility violations', async () => {

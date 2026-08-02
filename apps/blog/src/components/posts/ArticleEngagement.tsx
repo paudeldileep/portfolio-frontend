@@ -38,7 +38,7 @@ export function ArticleEngagement({ slug, title }: { slug: string; title: string
   useEffect(() => {
     setLiked(window.localStorage.getItem(likedStorageKey(slug)) === 'true');
 
-    fetch(`/blog/api/posts/${encodeURIComponent(slug)}/engagement`, {
+    fetch(`/api/posts/${encodeURIComponent(slug)}/engagement`, {
       cache: 'no-store',
     })
       .then(async (response) => {
@@ -71,7 +71,7 @@ export function ArticleEngagement({ slug, title }: { slug: string; title: string
     setMessage('');
     try {
       const response = await fetch(
-        `/blog/api/posts/${encodeURIComponent(slug)}/engagement`,
+        `/api/posts/${encodeURIComponent(slug)}/engagement`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

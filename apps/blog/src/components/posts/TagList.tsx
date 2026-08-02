@@ -13,7 +13,7 @@ export function TagList({
       {tags.map((tag, index) => (
         <li key={tagSlugs[index]}>
           <Link
-            href={`/blog/tag/${tagSlugs[index]}`}
+            href={`/tag/${tagSlugs[index]}`}
             className="inline-flex rounded-full"
           >
             <Badge variant="secondary">{tag}</Badge>

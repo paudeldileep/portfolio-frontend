@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import { getBlogZoneRewrites } from './src/config/blog-zone';
 
 const nextConfig: NextConfig = {
   output:
@@ -23,11 +22,6 @@ const nextConfig: NextConfig = {
         hostname: 'avatars.githubusercontent.com',
       },
     ],
-  },
-
-  // Proxy the independently deployed blog zone behind the portfolio origin.
-  async rewrites() {
-    return getBlogZoneRewrites();
   },
 
   // Security headers

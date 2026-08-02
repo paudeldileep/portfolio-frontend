@@ -19,7 +19,7 @@ export function ArticleNavigation({
     >
       {previousPost ? (
         <Link
-          href={`/blog/${previousPost.slug}`}
+          href={`/${previousPost.slug}`}
           className="rounded-xl border border-border p-5 transition-colors hover:border-border-strong hover:bg-bg-surface"
         >
           <span className="font-mono text-xs uppercase tracking-wide text-text-muted">
@@ -32,7 +32,7 @@ export function ArticleNavigation({
       )}
       {nextPost ? (
         <Link
-          href={`/blog/${nextPost.slug}`}
+          href={`/${nextPost.slug}`}
           className="rounded-xl border border-border p-5 text-left transition-colors hover:border-border-strong hover:bg-bg-surface sm:text-right"
         >
           <span className="font-mono text-xs uppercase tracking-wide text-text-muted">

@@ -15,12 +15,12 @@ function escapeXml(value: string): string {
 }
 
 export function getPostPublicUrl(post: PublishedPost): string {
-  return absoluteUrl(`/blog/${post.slug}`);
+  return absoluteUrl(`/${post.slug}`);
 }
 
 export function generateRssFeed(posts: PublishedPost[]): string {
-  const blogUrl = absoluteUrl('/blog');
-  const feedUrl = absoluteUrl('/blog/rss.xml');
+  const blogUrl = absoluteUrl('/');
+  const feedUrl = absoluteUrl('/rss.xml');
   const lastBuildDate =
     posts.length > 0
       ? new Date(
@@ -80,9 +80,9 @@ export function getSitemapEntries(posts: PublishedPost[]): SitemapEntry[] {
   ).sort();
 
   return [
-    { url: absoluteUrl('/blog') },
+    { url: absoluteUrl('/') },
     ...tagSlugs.map((tag) => ({
-      url: absoluteUrl(`/blog/tag/${tag}`),
+      url: absoluteUrl(`/tag/${tag}`),
     })),
     ...posts.map((post) => ({
       url: getPostPublicUrl(post),
