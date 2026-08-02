@@ -46,14 +46,14 @@ export default defineConfig({
         {
           command:
             "pnpm --dir ../blog build && pnpm --dir ../blog exec next start --port 3101",
-          url: `${localBlogOrigin}/blog`,
+          url: localBlogOrigin,
           reuseExistingServer: !process.env.CI,
           timeout: 180_000,
           env: {
             BLOG_API_URL: localApiOrigin,
             NEXT_DIST_DIR: '.next-e2e',
             NEXT_PUBLIC_PORTFOLIO_URL: localBaseUrl,
-            NEXT_PUBLIC_SITE_URL: localBaseUrl,
+            NEXT_PUBLIC_SITE_URL: localBlogOrigin,
           },
         },
         {
@@ -62,9 +62,8 @@ export default defineConfig({
           reuseExistingServer: !process.env.CI,
           timeout: 180_000,
           env: {
-            BLOG_ORIGIN: localBlogOrigin,
             NEXT_PUBLIC_API_URL: localApiOrigin,
-            NEXT_PUBLIC_BLOG_URL: `${localBaseUrl}/blog`,
+            NEXT_PUBLIC_BLOG_URL: localBlogOrigin,
             NEXT_PUBLIC_SITE_URL: localBaseUrl,
           },
         },

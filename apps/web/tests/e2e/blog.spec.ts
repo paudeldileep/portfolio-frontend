@@ -1,11 +1,24 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const ARTICLE_PATH = '/blog/building-an-accessible-content-pipeline';
-const TAG_PATH = '/blog/tag/accessibility';
+const BLOG_BASE_URL = process.env.PLAYWRIGHT_BLOG_BASE_URL ?? 'http://localhost:3101';
+const ARTICLE_PATH = '/building-an-accessible-content-pipeline';
+const TAG_PATH = '/tag/accessibility';
+
+function blogUrl(path: string) {
+  return new URL(path, `${BLOG_BASE_URL}/`).toString();
+}
 
 async function gotoReady(page: Page, path: string) {
   const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
+  const status = response?.status() ?? 500;
+
+  expect(status, `Expected a non-error response for ${path}`).toBeLessThan(400);
+  await expect(page.getByRole('main')).toBeVisible();
+}
+
+async function gotoBlogReady(page: Page, path: string) {
+  const response = await page.goto(blogUrl(path), { waitUntil: 'domcontentloaded' });
   const status = response?.status() ?? 500;
 
   expect(status, `Expected a non-error response for ${path}`).toBeLessThan(400);
@@ -28,7 +41,7 @@ test.describe('Blog routes and reading experience', () => {
     page,
     isMobile,
   }) => {
-    await gotoReady(page, '/blog');
+    await gotoBlogReady(page, '/');
     await expect(
       page.getByRole('heading', {
         level: 1,
@@ -41,7 +54,7 @@ test.describe('Blog routes and reading experience', () => {
       }),
     ).toBeVisible();
 
-    await gotoReady(page, ARTICLE_PATH);
+    await gotoBlogReady(page, ARTICLE_PATH);
     await expect(
       page.getByRole('heading', {
         level: 1,
@@ -60,7 +73,7 @@ test.describe('Blog routes and reading experience', () => {
       page.getByRole('list', { name: 'Article topics' }),
     ).toBeVisible();
 
-    await gotoReady(page, TAG_PATH);
+    await gotoBlogReady(page, TAG_PATH);
     await expect(
       page.getByRole('heading', { level: 1, name: 'Accessibility' }),
     ).toBeVisible();
@@ -70,7 +83,7 @@ test.describe('Blog routes and reading experience', () => {
   test('returns the blog not-found experience for an unknown article', async ({
     page,
   }) => {
-    const response = await page.goto('/blog/article-that-does-not-exist', {
+    const response = await page.goto(blogUrl('/article-that-does-not-exist'), {
       waitUntil: 'domcontentloaded',
     });
 
@@ -82,7 +95,7 @@ test.describe('Blog routes and reading experience', () => {
     ).toBeVisible();
     await expect(
       page.getByRole('link', { name: 'Return to the blog' }),
-    ).toHaveAttribute('href', '/blog');
+    ).toHaveAttribute('href', '/');
   });
 
   test('supports keyboard skip navigation', async ({ page, browserName }) => {
@@ -90,7 +103,7 @@ test.describe('Blog routes and reading experience', () => {
       browserName === 'webkit',
       'Safari requires Full Keyboard Access before Tab focuses links.',
     );
-    await gotoReady(page, '/blog');
+    await gotoBlogReady(page, '/');
 
     await page.keyboard.press('Tab');
     const skipLink = page.getByRole('link', { name: 'Skip to main content' });
@@ -99,11 +112,9 @@ test.describe('Blog routes and reading experience', () => {
     await expect(page.getByRole('main')).toBeFocused();
   });
 
-  test('persists the selected theme across the hard zone boundary', async ({
-    page,
-  }) => {
+  test('persists the selected theme on the independent blog origin', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
-    await gotoReady(page, '/blog');
+    await gotoBlogReady(page, '/');
     await page.evaluate(() => window.localStorage.removeItem('theme'));
     await page.reload({ waitUntil: 'domcontentloaded' });
 
@@ -112,10 +123,7 @@ test.describe('Blog routes and reading experience', () => {
     await page.getByRole('button', { name: 'Switch to dark mode' }).click();
     await expect(root).toHaveAttribute('data-theme', 'dark');
 
-    await gotoReady(page, '/');
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-
-    await gotoReady(page, '/blog');
+    await gotoBlogReady(page, '/');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   });
 
@@ -136,7 +144,7 @@ test.describe('Blog routes and reading experience', () => {
     await blogLink.click();
     const blogPage = await popupPromise;
     await blogPage.waitForLoadState('domcontentloaded');
-    await expect(blogPage).toHaveURL(/\/blog$/);
+    await expect(blogPage).toHaveURL(`${BLOG_BASE_URL}/`);
     await expect(
       blogPage.getByRole('heading', {
         level: 1,
@@ -154,8 +162,8 @@ test.describe('Blog routes and reading experience', () => {
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
-    for (const path of ['/blog', ARTICLE_PATH, TAG_PATH]) {
-      await gotoReady(page, path);
+    for (const path of ['/', ARTICLE_PATH, TAG_PATH]) {
+      await gotoBlogReady(page, path);
       const dimensions = await page.evaluate(() => ({
         clientWidth: document.documentElement.clientWidth,
         scrollWidth: document.documentElement.scrollWidth,
@@ -167,7 +175,7 @@ test.describe('Blog routes and reading experience', () => {
   });
 
   test('shows public likes and supports an anonymous like', async ({ page }) => {
-    await gotoReady(page, ARTICLE_PATH);
+    await gotoBlogReady(page, ARTICLE_PATH);
 
     const likeButton = page.getByRole('button', { name: /^Like/ });
     await expect(likeButton).toBeVisible();
@@ -179,15 +187,15 @@ test.describe('Blog routes and reading experience', () => {
 
 test.describe('Blog accessibility automation', () => {
   for (const [name, path] of [
-    ['landing', '/blog'],
+    ['landing', '/'],
     ['article', ARTICLE_PATH],
     ['tag archive', TAG_PATH],
-    ['not found', '/blog/article-that-does-not-exist'],
+    ['not found', '/article-that-does-not-exist'],
   ] as const) {
     test(`${name} has no serious or critical axe violations`, async ({
       page,
     }) => {
-      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await page.goto(blogUrl(path), { waitUntil: 'domcontentloaded' });
       await expect(page.getByRole('main')).toBeVisible();
       await expectNoSeriousAxeViolations(page);
     });

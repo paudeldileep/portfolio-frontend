@@ -39,9 +39,9 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   alternates: {
-    canonical: '/blog',
+    canonical: '/',
     types: {
-      'application/rss+xml': '/blog/rss.xml',
+      'application/rss+xml': '/rss.xml',
     },
   },
   openGraph: {
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    url: '/blog',
+    url: '/',
     images: [
       {
         url: DEFAULT_SOCIAL_IMAGE_PATH,
@@ -113,7 +113,7 @@ export default function RootLayout({
                 aria-label="Blog navigation"
               >
                 <Link
-                  href="/blog"
+                  href="/"
                   className="inline-flex items-center gap-3 rounded-md font-semibold"
                   aria-label="Dileep T Engineering Notes home"
                 >
@@ -125,7 +125,7 @@ export default function RootLayout({
 
                 <div className="flex items-center gap-2">
                   <Link
-                    href="/blog#latest"
+                    href="/#latest"
                     className="hidden rounded-md px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-bg-elevated hover:text-text-primary sm:inline-flex"
                   >
                     Articles
@@ -158,7 +158,7 @@ export default function RootLayout({
                   >
                     Portfolio
                   </a>
-                  <Link href="/blog" className="rounded-sm hover:text-primary">
+                  <Link href="/" className="rounded-sm hover:text-primary">
                     Articles
                   </Link>
                   <a href={privacyUrl} className="rounded-sm hover:text-primary">

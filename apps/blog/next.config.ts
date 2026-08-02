@@ -12,7 +12,6 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR ?? '.next',
   reactStrictMode: true,
   devIndicators: false,
-  assetPrefix: '/blog-static',
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   transpilePackages: ['@portfolio/ui', '@portfolio/tokens'],
   async headers() {

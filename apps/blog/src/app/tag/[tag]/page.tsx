@@ -37,7 +37,7 @@ export async function generateMetadata({
     posts[0].tags[posts[0].tagSlugs.indexOf(normalizedTag)] ?? tag;
   const title = `${displayTag} articles`;
   const description = `Engineering notes filed under ${displayTag}.`;
-  const canonicalUrl = `/blog/tag/${normalizedTag}`;
+  const canonicalUrl = `/tag/${normalizedTag}`;
 
   return {
     title,
@@ -75,7 +75,7 @@ export default async function TagPage({ params }: TagPageProps) {
     <main id="main-content" tabIndex={-1} className="outline-none">
       <section className="blog-container section-padding">
         <Link
-          href="/blog"
+          href="/"
           className="rounded-sm text-sm font-medium text-primary hover:underline"
         >
           &larr; All articles

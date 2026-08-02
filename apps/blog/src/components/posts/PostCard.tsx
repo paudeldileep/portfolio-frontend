@@ -14,7 +14,7 @@ export function PostCard({ post }: { post: PublishedPost }) {
         <TagList tags={post.tags} tagSlugs={post.tagSlugs} />
         <h3 className="mt-5 text-2xl font-semibold leading-snug">
           <Link
-            href={`/blog/${post.slug}`}
+            href={`/${post.slug}`}
             className="rounded-sm transition-colors group-hover:text-primary"
           >
             {post.title}

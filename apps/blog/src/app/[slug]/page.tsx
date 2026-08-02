@@ -87,7 +87,7 @@ export default async function PostPage({ params }: PostPageProps) {
       <div className="article-layout blog-container section-padding">
         <article className="min-w-0">
           <Link
-            href="/blog"
+            href="/"
             className="inline-flex rounded-sm text-sm font-medium text-primary hover:underline"
           >
             &larr; All articles

@@ -147,7 +147,7 @@ describe('post content utilities', () => {
 
     expect(feed).toContain('<rss version="2.0"');
     expect(feed).toContain(
-      '<atom:link href="http://localhost:3000/blog/rss.xml"',
+      '<atom:link href="http://localhost:3001/rss.xml"',
     );
     expect(feed.match(/<item>/g)).toHaveLength(posts.length);
     expect(feed).not.toContain('draft-content-fixture');
@@ -183,12 +183,12 @@ describe('post content utilities', () => {
       '@type': 'BlogPosting',
       headline: post.title,
       datePublished: post.publishedAt,
-      mainEntityOfPage: `http://localhost:3000/blog/${post.slug}`,
+      mainEntityOfPage: `http://localhost:3001/${post.slug}`,
       author: {
         '@type': 'Person',
         name: post.authorProfile.name,
       },
     });
-    expect(structuredData.image).toMatch(/^http:\/\/localhost:3000\//);
+    expect(structuredData.image).toMatch(/^http:\/\/localhost:3001\//);
   });
 });

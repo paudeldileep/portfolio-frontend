@@ -19,8 +19,8 @@ const NAV_LINKS = [
 const BLOG_URL =
   process.env.NEXT_PUBLIC_BLOG_URL ??
   (process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3001/blog'
-    : '/blog');
+    ? 'http://localhost:3001'
+    : 'https://blog.dileept.com');
 
 export default function Navbar() {
   const [open, setOpen] = React.useState(false);
