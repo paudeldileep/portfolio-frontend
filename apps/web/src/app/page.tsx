@@ -20,7 +20,10 @@ export const dynamic = 'force-dynamic';
 export default async function HomePage() {
   // Cache successful content so subsequent requests do not repeatedly wake the
   // free-tier backend. The route remains dynamic and is not fetched at build time.
-  const result = await getPortfolioContent({ revalidate: 43200 });
+  const result = await getPortfolioContent({
+    revalidate: 43200,
+    tags: ['portfolio-content'],
+  });
 
   // If backend is unavailable, show error page with retry capability
   if (!result.success) {
