@@ -35,6 +35,53 @@ export const adminPostSchema = z.object({
 export type AdminIdentity = z.infer<typeof adminIdentitySchema>;
 export type AdminPost = z.infer<typeof adminPostSchema>;
 
+const portfolioProfileSchema = z.object({
+  title: z.string(),
+  summary: z.array(z.string()),
+});
+
+const portfolioExperienceSchema = z.object({
+  id: z.string().optional(),
+  company: z.string(),
+  role: z.string(),
+  location: z.string().nullable().optional(),
+  start_date: z.string(),
+  end_date: z.string(),
+  type: z.literal('experience'),
+  summary: z.string(),
+  highlights: z.array(z.string()),
+});
+
+const portfolioEducationSchema = z.object({
+  id: z.string().optional(),
+  degree: z.string(),
+  institution: z.string().nullable().optional(),
+  cgpa: z.string(),
+  type: z.literal('education'),
+});
+
+const portfolioCertificationSchema = z.object({
+  id: z.string().optional(),
+  name: z.string(),
+  issuer: z.string(),
+  type: z.literal('certification'),
+});
+
+const portfolioContentSchema = z.object({
+  profile: portfolioProfileSchema,
+  skills: z.record(z.string(), z.array(z.string())),
+  experience: z.array(portfolioExperienceSchema),
+  education: z.array(portfolioEducationSchema),
+  certifications: z.array(portfolioCertificationSchema),
+});
+
+export const adminPortfolioSchema = z.object({
+  content: portfolioContentSchema,
+  version: z.number().int().positive(),
+});
+
+export type AdminPortfolio = z.infer<typeof adminPortfolioSchema>;
+
 export type AdminIdentityResult =
   | { status: 'authenticated'; identity: AdminIdentity }
   | { status: 'unauthenticated' }
@@ -127,6 +174,20 @@ export async function getAdminPost(postId: string): Promise<AdminPost> {
   }
 
   return adminPostSchema.parse(await response.json());
+}
+
+export async function getAdminPortfolio(): Promise<AdminPortfolio> {
+  const accessToken = await getVerifiedAccessToken();
+  if (!accessToken) redirect('/login');
+
+  const response = await fetchAdminApi('/v1/admin/portfolio', accessToken);
+  if (response.status === 401) redirect('/login');
+  if (response.status === 403) redirect('/unauthorized');
+  if (!response.ok) {
+    throw new Error(`Portfolio service failed with status ${response.status}`);
+  }
+
+  return adminPortfolioSchema.parse(await response.json());
 }
 
 export const getAdminIdentity = cache(loadAdminIdentity);

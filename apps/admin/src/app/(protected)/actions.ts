@@ -2,7 +2,8 @@
 
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { adminPostSchema, fetchAdminApi, getVerifiedAccessToken } from '@/lib/admin-api';
+import { adminPortfolioSchema, adminPostSchema, fetchAdminApi, getVerifiedAccessToken, type AdminPortfolio } from '@/lib/admin-api';
+import { portfolioProfileFormSchema, profileValuesToContent, type PortfolioProfileFormValues } from '@/lib/portfolio-form';
 import { postFormSchema, type PostFormValues } from '@/lib/post-form';
 import { createClient } from '@/lib/supabase/server';
 
@@ -16,7 +17,14 @@ export type PostActionResult =
   | { ok: true; post: z.infer<typeof adminPostSchema> }
   | { ok: false; message: string; latestVersion?: number };
 
-function failureFrom(response: Response, detail: unknown): PostActionResult {
+export type PortfolioActionResult =
+  | { ok: true; portfolio: AdminPortfolio }
+  | { ok: false; message: string; latestVersion?: number };
+
+function failureFrom(
+  response: Response,
+  detail: unknown
+): Extract<PostActionResult, { ok: false }> {
   const message =
     typeof detail === 'string'
       ? detail
@@ -91,4 +99,56 @@ export async function publishPost(postId: string, version: number): Promise<Post
 
 export async function archivePost(postId: string, version: number): Promise<PostActionResult> {
   return writePost(`/v1/admin/posts/${encodeURIComponent(postId)}/archive`, 'POST', { version });
+}
+
+export async function updatePortfolioProfile(
+  portfolio: AdminPortfolio,
+  values: PortfolioProfileFormValues
+): Promise<PortfolioActionResult> {
+  const parsed = portfolioProfileFormSchema.safeParse(values);
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues[0]?.message ?? 'Check the profile details.' };
+  }
+
+  const accessToken = await getVerifiedAccessToken();
+  if (!accessToken) return { ok: false, message: 'Your session has expired. Sign in again.' };
+
+  const response = await fetchAdminApi('/v1/admin/portfolio', accessToken, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      version: portfolio.version,
+      content: profileValuesToContent(portfolio, parsed.data),
+    }),
+  });
+
+  if (response.ok) {
+    return { ok: true, portfolio: adminPortfolioSchema.parse(await response.json()) };
+  }
+
+  const body: unknown = await response.json().catch(() => undefined);
+  const detail = typeof body === 'object' && body !== null && 'detail' in body ? body.detail : body;
+  const failure = failureFrom(response, detail);
+  return { ok: false, message: failure.message, latestVersion: failure.latestVersion };
+}
+
+export async function updatePortfolioContent(
+  portfolio: AdminPortfolio,
+  content: AdminPortfolio['content']
+): Promise<PortfolioActionResult> {
+  const accessToken = await getVerifiedAccessToken();
+  if (!accessToken) return { ok: false, message: 'Your session has expired. Sign in again.' };
+
+  const response = await fetchAdminApi('/v1/admin/portfolio', accessToken, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ version: portfolio.version, content }),
+  });
+
+  if (response.ok) return { ok: true, portfolio: adminPortfolioSchema.parse(await response.json()) };
+
+  const body: unknown = await response.json().catch(() => undefined);
+  const detail = typeof body === 'object' && body !== null && 'detail' in body ? body.detail : body;
+  const failure = failureFrom(response, detail);
+  return { ok: false, message: failure.message, latestVersion: failure.latestVersion };
 }
