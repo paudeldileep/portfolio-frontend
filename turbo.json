@@ -6,6 +6,7 @@
       "env": [
         "BLOG_ORIGIN",
         "NEXT_OUTPUT_MODE",
+        "PORTFOLIO_REVALIDATE_SECRET",
         "NEXT_PUBLIC_API_URL",
         "NEXT_PUBLIC_BLOG_URL",
         "NEXT_PUBLIC_PORTFOLIO_URL",
