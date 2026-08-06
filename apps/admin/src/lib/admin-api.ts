@@ -41,7 +41,7 @@ const portfolioProfileSchema = z.object({
 });
 
 const portfolioExperienceSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().nullable().optional(),
   company: z.string(),
   role: z.string(),
   location: z.string().nullable().optional(),
@@ -53,7 +53,7 @@ const portfolioExperienceSchema = z.object({
 });
 
 const portfolioEducationSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().nullable().optional(),
   degree: z.string(),
   institution: z.string().nullable().optional(),
   cgpa: z.string(),
@@ -61,7 +61,7 @@ const portfolioEducationSchema = z.object({
 });
 
 const portfolioCertificationSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().nullable().optional(),
   name: z.string(),
   issuer: z.string(),
   type: z.literal('certification'),
