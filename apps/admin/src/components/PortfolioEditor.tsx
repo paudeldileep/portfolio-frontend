@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@portfolio/ui';
-import { updatePortfolioContent } from '@/app/(protected)/actions';
+import { reindexPortfolio, updatePortfolioContent } from '@/app/(protected)/actions';
 import type { AdminPortfolio } from '@/lib/admin-api';
 
 const inputClass = 'mt-2 w-full rounded-lg border border-border bg-bg-surface px-3 py-2.5 text-text-primary shadow-sm placeholder:text-text-muted';
@@ -35,6 +35,7 @@ export function PortfolioEditor({ portfolio }: { portfolio: AdminPortfolio }) {
   const [content, setContent] = useState<Content>(portfolio.content);
   const [notice, setNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isReindexing, startReindex] = useTransition();
 
   const update = (next: Content) => { setContent(next); setNotice(null); };
   const save = () => startTransition(async () => {
@@ -46,6 +47,10 @@ export function PortfolioEditor({ portfolio }: { portfolio: AdminPortfolio }) {
     setCurrent(result.portfolio);
     setContent(result.portfolio.content);
     setNotice('Portfolio saved. The public cache refresh is requested securely.');
+  });
+  const reindex = () => startReindex(async () => {
+    const result = await reindexPortfolio();
+    setNotice(result.ok ? `RAG index refreshed with ${result.indexedChunks} portfolio sections.` : result.message);
   });
 
   return (
@@ -73,7 +78,7 @@ export function PortfolioEditor({ portfolio }: { portfolio: AdminPortfolio }) {
         <Card><CardHeader><CardTitle>Education</CardTitle></CardHeader><CardContent className="space-y-5">{content.education.map((item, index) => <div key={item.id ?? index} className="rounded-lg border border-border p-4"><label className="block text-sm font-medium">Degree<input className={inputClass} value={String(item.degree ?? '')} onChange={(e) => update({ ...content, education: content.education.map((value, i) => i === index ? { ...value, degree: e.target.value } : value) })} /></label><label className="mt-3 block text-sm font-medium">Institution<input className={inputClass} value={String(item.institution ?? '')} onChange={(e) => update({ ...content, education: content.education.map((value, i) => i === index ? { ...value, institution: e.target.value } : value) })} /></label><label className="mt-3 block text-sm font-medium">CGPA<input className={inputClass} value={String(item.cgpa ?? '')} onChange={(e) => update({ ...content, education: content.education.map((value, i) => i === index ? { ...value, cgpa: e.target.value } : value) })} /></label></div>)}</CardContent></Card>
         <Card><CardHeader><div className="flex items-center justify-between gap-4"><CardTitle>Certifications</CardTitle><button type="button" className="text-sm font-medium text-primary hover:underline" onClick={() => update({ ...content, certifications: [...content.certifications, { name: '', issuer: '', type: 'certification' }] })}>Add certificate</button></div></CardHeader><CardContent className="space-y-5">{content.certifications.map((item, index) => <div key={item.id ?? index} className="rounded-lg border border-border p-4"><div className="flex justify-end"><button type="button" className="text-sm text-text-muted hover:text-text-primary" onClick={() => update({ ...content, certifications: content.certifications.filter((_, i) => i !== index) })}>Remove</button></div><label className="block text-sm font-medium">Name<input className={inputClass} value={String(item.name ?? '')} onChange={(e) => update({ ...content, certifications: content.certifications.map((value, i) => i === index ? { ...value, name: e.target.value } : value) })} /></label><label className="mt-3 block text-sm font-medium">Issuer<input className={inputClass} value={String(item.issuer ?? '')} onChange={(e) => update({ ...content, certifications: content.certifications.map((value, i) => i === index ? { ...value, issuer: e.target.value } : value) })} /></label></div>)}</CardContent></Card>
       </div>
-      <div className="sticky bottom-4 z-10 flex justify-end"><Button type="button" onClick={save} disabled={isPending}>{isPending ? 'Saving…' : 'Save portfolio'}</Button></div>
+      <div className="sticky bottom-4 z-10 flex flex-wrap justify-end gap-3"><Button type="button" variant="secondary" onClick={reindex} disabled={isReindexing || isPending}>{isReindexing ? 'Refreshing RAG…' : 'Refresh AI knowledge'}</Button><Button type="button" onClick={save} disabled={isPending || isReindexing}>{isPending ? 'Saving…' : 'Save portfolio'}</Button></div>
     </section>
   );
 }
