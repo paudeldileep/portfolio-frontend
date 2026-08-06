@@ -86,7 +86,7 @@ async function fetchWithRetry(
  * Uses ISR-friendly cache revalidation when called from Next.js Server Components.
  */
 export async function getPortfolioContent(
-  nextOptions?: { revalidate?: number | false; tags?: string[] }
+  nextOptions?: { revalidate?: number | false; tags?: string[]; cache?: RequestCache }
 ): Promise<ApiResult<PortfolioContent>> {
   try {
     const res = await withTimeout(
@@ -98,7 +98,11 @@ export async function getPortfolioContent(
         signal: AbortSignal.timeout(CONTENT_REQUEST_TIMEOUT_MS),
         // Next.js App Router extended fetch options for ISR
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ...(nextOptions ? { next: nextOptions } : { cache: 'no-store' as any }),
+        ...(nextOptions?.cache === 'no-store'
+          ? { cache: 'no-store' as const }
+          : nextOptions
+            ? { next: nextOptions }
+            : { cache: 'no-store' as const }),
       }),
       CONTENT_REQUEST_TIMEOUT_MS
     );
