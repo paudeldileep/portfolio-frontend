@@ -152,3 +152,18 @@ export async function updatePortfolioContent(
   const failure = failureFrom(response, detail);
   return { ok: false, message: failure.message, latestVersion: failure.latestVersion };
 }
+
+export async function reindexPortfolio(): Promise<{ ok: true; indexedChunks: number } | { ok: false; message: string }> {
+  const accessToken = await getVerifiedAccessToken();
+  if (!accessToken) return { ok: false, message: 'Your session has expired. Sign in again.' };
+
+  const response = await fetchAdminApi('/v1/admin/portfolio/reindex', accessToken, { method: 'POST' });
+  if (response.ok) {
+    const body = (await response.json()) as { indexed_chunks?: number };
+    return { ok: true, indexedChunks: body.indexed_chunks ?? 0 };
+  }
+
+  const body: unknown = await response.json().catch(() => undefined);
+  const detail = typeof body === 'object' && body !== null && 'detail' in body ? body.detail : body;
+  return { ok: false, message: typeof detail === 'string' ? detail : `Reindex failed (${response.status}).` };
+}
