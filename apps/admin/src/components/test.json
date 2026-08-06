@@ -1,0 +1,209 @@
+{
+  "skills": {
+    "security": [
+      "OAuth",
+      "JWT",
+      "Encryption",
+      "Secure Coding Practices"
+    ],
+    "databases": [
+      "MongoDB",
+      "MySQL",
+      "PostgreSQL"
+    ],
+    "backend_apis": [
+      "Node.js",
+      "Express.js",
+      "Java",
+      "Spring Boot",
+      "REST APIs",
+      "Microservices"
+    ],
+    "cloud_devops": [
+      "AWS (EKS, ECS, S3, CloudWatch, API Gateway)",
+      "Docker",
+      "Kubernetes",
+      "Jenkins",
+      "CI/CD Pipelines",
+      "Git",
+      "GitHub"
+    ],
+    "testing_quality": [
+      "Jest",
+      "React Testing Library",
+      "JUnit",
+      "Mocha",
+      "JSDOM",
+      "Postman"
+    ],
+    "ai_emerging_tech": [
+      "GitHub Copilot",
+      "Prompt Engineering",
+      "Code Generation",
+      "AI Agents",
+      "RAG & LangChain Fundamentals",
+      "LLM Application Concepts"
+    ],
+    "frontend_engineering": [
+      "React.js",
+      "TypeScript",
+      "Angular (12+)",
+      "JavaScript (ES6+)",
+      "Redux",
+      "NgRx",
+      "RxJS",
+      "Vue.js",
+      "Ionic",
+      "React Native",
+      "HTML5",
+      "CSS3",
+      "SASS",
+      "Tailwind CSS",
+      "Web Components"
+    ],
+    "performance_dev_experience": [
+      "Performance Optimization",
+      "Lighthouse",
+      "Chrome DevTools",
+      "Lazy Loading",
+      "Code Splitting",
+      "Webpack",
+      "Babel"
+    ],
+    "frontend_architecture_accessibility": [
+      "Design Systems",
+      "Design Tokens",
+      "Component Libraries",
+      "Micro Frontends",
+      "Monorepos",
+      "Responsive Design",
+      "WCAG 2.1 AA",
+      "ARIA",
+      "Accessibility Testing (AXE, NVDA)"
+    ]
+  },
+  "profile": {
+    "title": "Full stack Engineer",
+    "summary": [
+      "Full Stack Software Engineer with 7+ years of experience delivering scalable, accessible, and \nproduction-ready applications across financial services, healthcare, and enterprise environments. Strong \nexpertise in React, TypeScript, JavaScript, Java 17/21, Spring Boot 3/4, REST APIs, microservices, \nPostgreSQL, MongoDB, AWS, and automated testing.",
+      "Proven experience owning end-to-end workflows across reusable frontend features, backend services, event\ndriven integrations, and containerized delivery. Production-minded mentor who balances performance, \nreliability, and maintainability; contributes across Agile planning, development, CI/CD, and support; and uses \nAI-assisted tools to accelerate delivery and code quality."
+    ]
+  },
+  "education": [
+    {
+      "id": "45d824d7-52d6-4ff8-bff7-9a04f61f1067",
+      "cgpa": "3.91",
+      "type": "education",
+      "degree": "Bachelor of Engineering in Information Technology",
+      "institution": null
+    }
+  ],
+  "experience": [
+    {
+      "id": "71b3b743-d2f1-4d7c-baa0-a67e2cebc94e",
+      "role": "Full Stack Engineer",
+      "type": "experience",
+      "company": "Fidelity Investments",
+      "summary": "Full stack engineer working on enterprise Angular web and hybrid mobile applications in a highly regulated financial environment.",
+      "end_date": "Present",
+      "location": null,
+      "highlights": [
+        "Lead frontend delivery across enterprise Angular web and Ionic hybrid applications, building reusable features and resolving WCAG 2.1 AA issues 30% ahead of projected timelines.",
+        "Develop reusable Angular and Ionic features within Fidelity's enterprise design system, integrating them with Java 21 and Spring Boot REST services for secure end-to-end business workflows.",
+        "Build and enhance Java 21/Spring Boot 4 microservices and REST APIs using Gradle, Swagger/OpenAPI, Apache Camel, and PostgreSQL, owning validation, business logic, persistence, and downstream integrations.",
+        "Integrate Spring Boot services with Apache Kafka to publish and consume business events, supporting asynchronous processing and reliable data flow across enterprise systems.",
+        "Deliver full-stack reporting workflows by embedding interactive Power BI experiences and implementing backend capabilities for saving configurations, processing business rules, and exporting outputs.",
+        "Develop JUnit and Mockito tests for service and API logic; validate Kafka and REST integrations and use frontend automation and code reviews to improve release confidence.",
+        "Troubleshoot frontend, API, database, and Kafka issues using Splunk, Datadog, and AWS CloudWatch; support containerized delivery to AWS EKS through Jenkins CI/CD and participate in Agile planning and production support."
+      ],
+      "start_date": "April 2025"
+    },
+    {
+      "id": "71508905-c186-4e78-8aac-4ccd75901d49",
+      "role": "Frontend Developer",
+      "type": "experience",
+      "company": "Bank of America",
+      "summary": "Frontend developer delivering secure, responsive financial applications using modern React and Vue-based stacks.",
+      "end_date": "April 2025",
+      "location": null,
+      "highlights": [
+        "Delivered end-to-end financial workflows using React, TypeScript, Java 17, Spring Boot 3, REST APIs, and XML-based application and integration configurations.",
+        "Reduced application redesign timelines by 50% through reusable React patterns, technical leadership, mentoring, and coordination across distributed onshore and offshore teams.",
+        "Designed reusable React components and shared frontend patterns, connecting them to Spring Boot REST endpoints for consistent validation, error handling, and secure data exchange.",
+        "Built and enhanced Java 17/Spring Boot 3 service-layer and REST API capabilities, implementing business rules, validation, and XML-configured integration flows for enterprise banking use cases.",
+        "Diagnosed issues across React interfaces and backend integrations using API testing, logging, and root cause analysis; supported Docker-based builds and controlled releases through Jenkins and UrbanCode Deploy (uDeploy).",
+        "Improved frontend performance and accessibility with Lighthouse and Chrome DevTools; contributed unit testing, code reviews, Agile delivery, and mentoring across the full development lifecycle."
+      ],
+      "start_date": "March 2023"
+    },
+    {
+      "id": "7b3d122d-1faf-4acb-a918-50cc8c72caa0",
+      "role": "Software Engineer",
+      "type": "experience",
+      "company": "Zakipoint Health",
+      "summary": "Lead frontend developer for a React Native healthcare application with supporting Node.js and Firebase services.",
+      "end_date": "August 2022",
+      "location": null,
+      "highlights": [
+        "Served as Lead Frontend Developer for a React Native and Expo healthcare application, driving frontend architecture, implementation decisions, and reusable cross-platform component patterns.",
+        "Delivered cross-platform features using React Native and Expo, including push notifications, geolocation services, authentication workflows, and third-party integrations that improved engagement and usability.",
+        "Built and maintained Node.js APIs and Firebase Firestore document-database services supporting authentication, real-time chat, notifications, and healthcare collaboration workflows.",
+        "Improved application reliability and maintainability by expanding automated test coverage using Jest and React Testing Library.",
+        "Partnered with backend stakeholders to implement secure authentication, authorization, and data management solutions for healthcare-related user data."
+      ],
+      "start_date": "December 2021"
+    },
+    {
+      "id": "588f6fc0-c41c-4905-80bd-0e48cc9de783",
+      "role": "Web Application Developer",
+      "type": "experience",
+      "company": "Fivonest Technology Pvt Ltd",
+      "summary": "Web application developer building responsive React and Next.js applications and full-stack solutions for multiple industries.",
+      "end_date": "November 2021",
+      "location": null,
+      "highlights": [
+        "Developed full-stack web applications using React, Next.js, JavaScript, Node.js, Express.js, REST APIs, and MongoDB for clients across multiple industries.",
+        "Built reusable React components and scalable frontend patterns for e-commerce, ERP, and customer facing platforms, including a restaurant solution that increased online engagement by 30%.",
+        "Implemented centralized state management, REST API integrations, authentication services, MongoDB data access, and third-party integrations for scalable e-commerce and ERP solutions.",
+        "Collaborated directly with clients to translate business requirements into maintainable technical solutions and successful project outcomes.",
+        "Mentored interns and junior developers through code reviews, pair programming, technical guidance, and knowledge-sharing sessions."
+      ],
+      "start_date": "March 2019"
+    },
+    {
+      "id": "282a2d1d-99e1-47ff-91ac-245df1a6e5b8",
+      "role": "Junior Professor / Teaching Assistant",
+      "type": "experience",
+      "company": "Nepal College of Information Technology",
+      "summary": "Junior Professor and Teaching Assistant focused on web development, software engineering, and academic project supervision.",
+      "end_date": "August 2022",
+      "location": null,
+      "highlights": [
+        "Delivered instruction in web development, programming fundamentals, software engineering, databases, APIs, and application architecture.",
+        "Supervised academic and independent web and mobile projects through requirements, design, implementation, testing, and presentation.",
+        "Developed internal academic-management applications and student-tracking tools while mentoring students on coding practices and technical problem-solving."
+      ],
+      "start_date": "May 2018"
+    }
+  ],
+  "certifications": [
+    {
+      "id": "b976b179-4c7e-4782-b3a1-f7e2fa588418",
+      "name": "AWS Certified Cloud Practitioner",
+      "type": "certification",
+      "issuer": "Amazon Web Services"
+    },
+    {
+      "id": "b85ca63a-19f7-47ec-a0bc-02573c46b410",
+      "name": "AI For Everyone",
+      "type": "certification",
+      "issuer": "DeepLearning.AI"
+    },
+    {
+      "id": "2dcc117a-efeb-45f7-b5f5-c14817ec18ee",
+      "name": "Fundamentals of AI Agents Using RAG and LangChain",
+      "type": "certification",
+      "issuer": "IBM"
+    }
+  ]
+}
